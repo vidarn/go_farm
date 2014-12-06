@@ -37,8 +37,6 @@ function add_player()
         inventory = {}
     }
 
-
-
     game.pos[id] = {x=x,y=y,vx=0,vy=0}
     game.world:add(id, game.pos[id].x,game.pos[id].y, w, h)
     return id

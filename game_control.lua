@@ -71,8 +71,7 @@ function interact(player_id)
         end 
     end
     if not interacted then
-        local active_slot = 1
-        local inv = game.players[player_id].inventory[active_slot]
+        local inv = game.players[player_id].inventory[game.players[player_id].active_inventory_slot]
         if inv ~= nil then
             local interactable = game.interactables[inv]
             if interactable.functions.use ~= nil then

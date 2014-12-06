@@ -57,7 +57,7 @@ return {
                     -- add to player slot
                     game.players[player_id].inventory[inventory_id] = id
             else 
-                print("NO SLOTS FREEEEEEEEEE")
+                print("INGA SLOTS LEDIGA, sorry grabbar!")
             end
             return true
         end,
