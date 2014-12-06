@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="isometric" renderorder="right-down" width="40" height="40" tilewidth="32" tileheight="16">
  <tileset firstgid="1" name="block" tilewidth="32" tileheight="32">
+  <tileoffset x="0" y="16"/>
   <image source="../../../ludum_warmup/data/tiles/block.png" width="1920" height="1147"/>
  </tileset>
  <layer name="Tile Layer 1" width="40" height="40">
   <data encoding="base64" compression="zlib">
-   eJztlEEKwDAIBO3DQvH/n+qhFES05lLXwh6GkOSQYTWqiByGcxiT3bzfHxzRLpUj2qNyRDsQQgghRGSZdZn9VNB+/v1oj3RcCVMytE6aOCL91Hh5P3TvaUCWb3XW5fdGd66Vj++/LONuv6yWK7hH9l/0j7v8vM/TX5WfzfJrP3+2M5tR8yd7N8oPPRd9HbMaox3RNd31m8ikrOhIyM0FpoiFsA==
+   eJzt1EsKgDAMRdFsrIj735QOLAZppLT5vMEbXBCEckyoTUTOu/aknzM7jLrJCsU3epdpXfFZXlRfNyL49F7RfHqPWXdmZX7fMyp9s/+YCt9fI1+Eccdn7RrBZ1m85+jt8zZG+DyNO74ZI7Kver8Z0Ucfog/FSB999NFHH330YfkQnJ6+mbMi8v7eKh/6/Oh7uwAsuoGG
   </data>
  </layer>
  <layer name="game" width="40" height="40">

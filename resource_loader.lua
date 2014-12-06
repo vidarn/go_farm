@@ -36,17 +36,17 @@ function load_map(name)
                         end
                     end
                     if(tileset ~= nil) then
-                        if layer.sprite_batches[tileset.name] == nil then
-                            layer.sprite_batches[tileset.name] = love.graphics.newSpriteBatch(tileset.loaded_image,layer.width*layer.height,"static")
-                        end
-                        local sprite_batch = layer.sprite_batches[tileset.name]
+                        --if layer.sprite_batches[tileset.name] == nil then
+                            --layer.sprite_batches[tileset.name] = love.graphics.newSpriteBatch(tileset.loaded_image,layer.width*layer.height,"static")
+                        --end
+                        --local sprite_batch = layer.sprite_batches[tileset.name]
                         local localgid = tile + 1 - tileset.firstgid
                         local tx = localgid % tileset.tiles_x
                         local ty = math.floor(localgid / tileset.tiles_x)
                         local tw = tileset.tilewidth
                         local th = tileset.tileheight
                         local quad = love.graphics.newQuad(tx*tw, ty*th,tw,th,tileset.imagewidth, tileset.imageheight)
-                        sprite_batch:add(quad,x*map.tilewidth,(y+1)*map.tileheight-tileset.tileheight)
+                        --sprite_batch:add(quad,x*map.tilewidth,(y+1)*map.tileheight-tileset.tileheight)
                         local properties = tileset.properties[tile]
                         if properties then
                             for key,val in pairs(properties) do

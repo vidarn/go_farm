@@ -10,6 +10,9 @@ game.camera = {
     offset_x = 0.0, offset_y = 0.0,
 }
 
+game.chunksize = 6
+game.num_chunks = {w=0,h=0}
+
 
 game.shake_time = 0.0
 
@@ -117,6 +120,25 @@ function spawn_from_map(map,layername,hide_layer)
     end
 end
 
+function to_tile_coord(x,y)
+    local ret_x = math.floor( x/game.map.tilewidth + y/game.map.tileheight)
+    local ret_y = math.floor(-x/game.map.tilewidth + y/game.map.tileheight)
+    return ret_x,ret_y
+end
+
+function to_canvas_coord(x,y)
+    local ret_x = (x-y)*game.map.tilewidth*0.5
+    local ret_y = (x+y)*game.map.tileheight*0.5
+    return ret_x,ret_y
+end
+
+function get_current_chunk()
+    local player_tile_x, player_tile_y = to_tile_coord(game.pos[game.player].x, game.pos[game.player].y)
+    local x = math.floor(player_tile_x/game.chunksize)
+    local y = math.floor(player_tile_y/game.chunksize)
+    return x,y
+end
+
 function set_sprite(id,name,frames_x,frames_y,speed,direction,tile_w, tile_h, offset_x, offset_y)
     local sprite = load_resource(name,"sprite")
     local grid = anim8.newGrid(tile_w,tile_h,sprite:getWidth(),sprite:getHeight())
@@ -131,7 +153,7 @@ end
 function add_player()
     local id = new_entity()
     local x = 100
-    local y = 20
+    local y = 200
     local w = 8
     local h = 12
     local center_x = 0.5
@@ -192,6 +214,7 @@ function game:init()
         end
     end
     spawn_from_map(game.map,"objects",true)
+    game.num_chunks = {w=game.map.width/game.chunksize, h=game.map.height/game.chunksize}
 
     prerun_physics(100)
 end
@@ -207,31 +230,44 @@ end
 
 function update_player(dt,id)
     local accel = 600.0
-    local damping = -game.pos[id].vx*0.3
-    local walk_dir = 0
+    local damping_x = -game.pos[id].vx*0.3
+    local damping_y = -game.pos[id].vy*0.3
+    local walk_dir_x = 0
+    local walk_dir_y = 0
     if(love.keyboard.isDown('left') or love.keyboard.isDown("a")) then
         game.pos[id].vx = game.pos[id].vx - accel*dt
         game.direction[id] = -1
-        walk_dir = -1
+        walk_dir_x = -1
     end
     if(love.keyboard.isDown('right') or love.keyboard.isDown("d")) then
         game.pos[id].vx = game.pos[id].vx + accel*dt
         game.direction[id] = 1
-        walk_dir = 1
+        walk_dir_x = 1
     end
     if(love.keyboard.isDown('up') or love.keyboard.isDown("w")) then
+        game.pos[id].vy = game.pos[id].vy - accel*dt
+        game.direction[id] = 1
+        walk_dir_y = -1
     end
-    if(walk_dir ~= sign(game.pos[id].vx)) then 
-        game.pos[id].vx = game.pos[id].vx + damping
+    if(love.keyboard.isDown('down') or love.keyboard.isDown("s")) then
+        game.pos[id].vy = game.pos[id].vy + accel*dt
+        game.direction[id] = 1
+        walk_dir_y = 1
+    end
+    if(walk_dir_x ~= sign(game.pos[id].vx)) then 
+        game.pos[id].vx = game.pos[id].vx + damping_x
+    end
+    if(walk_dir_y ~= sign(game.pos[id].vy)) then 
+        game.pos[id].vy = game.pos[id].vy + damping_y
     end
 end
 
 function update_physics(dt,id)
-    local max_speed = 200.0
+    local max_speed = 100.0
     -- Update physics
     local sx = sign(game.pos[id].vx)
     local sy = sign(game.pos[id].vy)
-    game.pos[id].vy = math.min(math.abs(game.pos[id].vy),max_speed)*sy
+    game.pos[id].vy = math.min(math.abs(game.pos[id].vy),max_speed*0.5)*sy
     game.pos[id].vx = math.min(math.abs(game.pos[id].vx),max_speed)*sx
     local dy = dt*(game.pos[id].vy)
     local dx = dt*(game.pos[id].vx) 
@@ -306,8 +342,10 @@ function game:update(dt)
     -- Update camera
     local camera_offset = 7
     game.camera.offset_x = game.camera.offset_x + (game.direction[game.player]*camera_offset - game.camera.offset_x)*0.3
-    game.camera.x = game.pos[game.player].x + game.camera.offset_x + game.tile_size.w
-    game.camera.y = game.pos[game.player].y
+    local player_chunk_x, player_chunk_y = get_current_chunk()
+    local offset_x, offset_y = to_canvas_coord(player_chunk_x*game.chunksize, player_chunk_y*game.chunksize)
+    game.camera.x = offset_x
+    game.camera.y = game.map.tileheight*3 + offset_y
     game.camera.x = game.camera.x + game.camera.shake_amplitude*love.math.noise(12345.2 + game.shake_time*game.camera.shake_frequency)
     game.camera.y = game.camera.y + game.camera.shake_amplitude*love.math.noise(31.5232 + game.shake_time*game.camera.shake_frequency)
 
@@ -332,27 +370,31 @@ function game:draw()
     -- draw map
     for _,layer in pairs(game.map.layers) do
         if layer.name ~= "game" and layer.visible ~= false then
-            for x = 1, layer.width do
-                for y = 1, layer.height do
-                    local tile = layer.data[x+(y-1)*layer.width] - 1
-                    if tile ~= nil then
-                        local tileset = nil
-                        for _,ts in pairs(game.map.tilesets) do
-                            if(tile < ts.lastgid) then
-                                tileset = ts
-                                break
+            local chunk_x, chunk_y = get_current_chunk()
+            for x = chunk_x*game.chunksize+1, (chunk_x+1)*game.chunksize do
+                for y = chunk_y*game.chunksize+1, (chunk_y+1)*game.chunksize do
+                    if x >= 1 and x < game.map.width and y >=1 and y < game.map.height then
+                        local tile = layer.data[x+(y-1)*layer.width]
+                        if tile ~= nil then
+                            tile = tile - 1
+                            local tileset = nil
+                            for _,ts in pairs(game.map.tilesets) do
+                                if(tile < ts.lastgid) then
+                                    tileset = ts
+                                    break
+                                end
                             end
-                        end
-                        if(tileset ~= nil) then
-                            local localgid = tile + 1 - tileset.firstgid
-                            local tx = localgid % tileset.tiles_x
-                            local ty = math.floor(localgid / tileset.tiles_x)
-                            local tw = tileset.tilewidth
-                            local th = tileset.tileheight
-                            local quad = love.graphics.newQuad(tx*tw, ty*th,tw,th,tileset.imagewidth, tileset.imageheight)
-                            local draw_x = (x-y)*game.map.tilewidth*0.5
-                            local draw_y = (x+y)*game.map.tileheight*0.5
-                            love.graphics.draw(tileset.loaded_image, quad, draw_x, draw_y)
+                            if(tileset ~= nil) then
+                                local localgid = tile + 1 - tileset.firstgid
+                                local tx = localgid % tileset.tiles_x
+                                local ty = math.floor(localgid / tileset.tiles_x)
+                                local tw = tileset.tilewidth
+                                local th = tileset.tileheight
+                                local quad = love.graphics.newQuad(tx*tw, ty*th,tw,th,tileset.imagewidth, tileset.imageheight)
+                                local draw_x = (x-y-1)*game.map.tilewidth*0.5
+                                local draw_y = (x+y-1)*game.map.tileheight*0.5
+                                love.graphics.draw(tileset.loaded_image, quad, draw_x, draw_y)
+                            end
                         end
                     end
                 end
