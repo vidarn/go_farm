@@ -2,7 +2,9 @@ bump      = require "lib.bump.bump"
 anim8     = require "lib.anim8.anim8"
 timer     = require "lib.hump.timer"
 require "common"
+
 game = {}
+game.interactable_functions = require "interactables"
 
 game.camera = {
     x = 0.0, y=0.0,
@@ -30,6 +32,7 @@ game.components = {
     "dynamic",
     "coins",
     "tiles",
+    "interactables"
 }
 
 function create_component_managers()
@@ -94,16 +97,17 @@ function spawn_from_map(map,layername,hide_layer)
                     if tile > -1 then
                         local properties = tileset.properties[tile]
                         if properties then
-                            local px = x*map.tilewidth
-                            local py = y*map.tilewidth
                             for key,val in pairs(properties) do
                                 if key == "spawn" then
+                                    if val == "interactable" then
+                                        add_interactable(x,y,properties.interactable_type)
+                                    end
                                     if val == "coin" then
-                                        add_coin(px,py)
+                                        add_coin(x,y)
                                     end
                                     if val == "player" then
-                                        game.pos[game.player].x = px
-                                        game.pos[game.player].y = py
+                                        game.pos[game.player].x = x
+                                        game.pos[game.player].y = y
                                     end
                                 end
                             end
@@ -227,7 +231,37 @@ function game:keyreleased(key, code)
     if key == 'f1' then
         debug.debug()
     end
+    if key == 'e' then
+      interact() -- NOTE(Peter) Maybe this should belong in player. Putting it here to avoid calling interact multiple times.
+    end
 end
+
+function add_interactable(x,y,interactable_type)
+    local id = new_entity()
+
+    game.interactables[id] = game.interactable_functions[interactable_type]
+    game.pos[id] = {x=x,y=y,vx=0,vy=0}
+
+    -- execute object specific code, which is defined in nteractables.lua
+    game.interactables[id].create(id)
+end
+
+function interact()
+    local use_range= math.pow(1.0,2)
+    for id, interactable in pairs(game.interactables) do
+        --check that object is close
+        local dx = game.pos[id].x-game.pos[game.player].x
+        local dy = game.pos[id].y-game.pos[game.player].y
+        local distance = math.pow(dx,2) + math.pow(dy,2)
+        print("interact distance"..distance)
+        if (  distance < use_range ) then
+
+            -- run function for interactable
+            interactable.interact(id)
+        end 
+    end
+end
+
 
 function update_player(dt,id)
     local accel = 600.0
@@ -408,6 +442,9 @@ function game:draw()
             x = math.floor(x)
             y = math.floor(y)
             sprite.anim:draw(sprite.sprite,x+sprite.offset_x,y+sprite.offset_y)
+            --for debugging, draw center
+            local cx, cy = to_canvas_coord(game.pos[id].x, game.pos[id].y)
+            love.graphics.rectangle("fill", cx, cy, 2,2)
         end
     end
 

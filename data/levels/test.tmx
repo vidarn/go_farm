@@ -2,7 +2,16 @@
 <map version="1.0" orientation="isometric" renderorder="right-down" width="40" height="40" tilewidth="32" tileheight="16">
  <tileset firstgid="1" name="block" tilewidth="32" tileheight="32">
   <tileoffset x="0" y="16"/>
-  <image source="../../../ludum_warmup/data/tiles/block.png" width="1920" height="1147"/>
+  <image source="../tiles/block.png" width="1920" height="1147"/>
+ </tileset>
+ <tileset firstgid="2101" name="objects" tilewidth="32" tileheight="32">
+  <image source="../tiles/objects.png" width="57" height="32"/>
+  <tile id="0">
+   <properties>
+    <property name="interactable_type" value="ball"/>
+    <property name="spawn" value="interactable"/>
+   </properties>
+  </tile>
  </tileset>
  <layer name="Tile Layer 1" width="40" height="40">
   <data encoding="base64" compression="zlib">
@@ -12,6 +21,11 @@
  <layer name="game" width="40" height="40">
   <data encoding="base64" compression="zlib">
    eJztzjENAAAIA7BZw78pJCxcPK2CJgAAAAAAADfzHSgWQaAAQg==
+  </data>
+ </layer>
+ <layer name="objects" width="40" height="40">
+  <data encoding="base64" compression="zlib">
+   eJztzjERAAAIBKAfLWT/aqbwHIQEJHzVdT0AAAAAAIAdA5U3AD4=
   </data>
  </layer>
 </map>

@@ -1,0 +1,3 @@
+Objects
+    Theese are the types of interactable objects
+    ball - a dev object that blinks when interacted with
