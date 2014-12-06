@@ -91,7 +91,23 @@ return {
         end,
 
         drop = function(player_id)
-            print("DROP SHOVEL!")
+            print("DROP SHOVeL!")
+            local player = game.players[player_id]
+            local inv_id = get_current_inv_id(player_id)
+
+            --move shovel item in worlds and unhide it.
+            local x = game.pos[player_id].x 
+            local y = game.pos[player_id].y
+
+            game.pos[inv_id].x = x
+            game.pos[inv_id].y = y
+
+            game.sprites[inv_id].active = true
+            game.interactables[inv_id].active = true
+
+            --remove from inventory
+            player.inventory[player.active_inventory_slot] = nil
+
         end,
 
     },

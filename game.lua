@@ -218,6 +218,7 @@ function add_player()
     -- SET UP DEFAULT PLAYER!
     game.players[id] = {
         inventory_slots = 1,
+        active_inventory_slot = 1,
         inventory = {}
     }
 
@@ -278,6 +279,7 @@ function game:init()
 end
 
 function game:keyreleased(key, code)
+    local player_id = game.player_ids[1]
     if key == 'escape' then
         gamestate.switch(g_menu)
     end
@@ -285,7 +287,18 @@ function game:keyreleased(key, code)
         debug.debug()
     end
     if key == 'e' then
-        interact(game.player_ids[1]) --keyboard is treated as player one
+        interact(player_id) --keyboard is treated as player one
+    end
+    if key == 'q' then
+        local interactable = game.interactables[get_current_inv_id(game.player_ids[1])]
+        print(interactable)
+        if interactable ~= nil then
+            if interactable.functions ~= nil then
+                if interactable.functions.drop ~= nil then
+                  interactable.functions.drop(player_id)
+                end
+            end
+        end
     end
 end
 
@@ -303,6 +316,11 @@ function add_interactable(x,y,interactable_type)
     else
         print("Error creating interactable \""..interactable_type.."\", interactable type not recognized")
     end
+end
+
+function get_current_inv_id(player_id) 
+    local active_slot = game.players[player_id].active_inventory_slot
+    return game.players[player_id].inventory[active_slot]
 end
 
 function interact(player_id)
