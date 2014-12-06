@@ -6,7 +6,7 @@ require "game"
 g_menu = {}
 
 g_screenres = {
-    w=200,h=150
+    w=400,h=300
 }
 
 function love.load()
