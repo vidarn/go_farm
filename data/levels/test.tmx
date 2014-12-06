@@ -3,6 +3,11 @@
  <tileset firstgid="1" name="block" tilewidth="32" tileheight="32">
   <tileoffset x="0" y="16"/>
   <image source="../../../ludum_warmup/data/tiles/block.png" width="1920" height="1147"/>
+  <tile id="64">
+   <properties>
+    <property name="collision" value="true"/>
+   </properties>
+  </tile>
  </tileset>
  <layer name="Tile Layer 1" width="40" height="40">
   <data encoding="base64" compression="zlib">

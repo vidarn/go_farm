@@ -23,7 +23,14 @@ return {
         y = 16
       },
       properties = {},
-      tiles = {}
+      tiles = {
+        {
+          id = 64,
+          properties = {
+            ["collision"] = "true"
+          }
+        }
+      }
     }
   },
   layers = {

@@ -17,7 +17,7 @@ game.num_chunks = {w=0,h=0}
 game.shake_time = 0.0
 
 game.tile_size = {
-    w=20,h=20,
+    w=32,h=16,
 }
 
 game.alive = {}
@@ -120,23 +120,28 @@ function spawn_from_map(map,layername,hide_layer)
     end
 end
 
-function to_tile_coord(x,y)
-    local ret_x = math.floor( x/game.map.tilewidth + y/game.map.tileheight)
-    local ret_y = math.floor(-x/game.map.tilewidth + y/game.map.tileheight)
-    return ret_x,ret_y
+function to_tile_coord(x,y,truncate)
+    if truncate == nil then truncate = true end
+    local ret_x = x/game.map.tilewidth + y/game.map.tileheight
+    local ret_y = -x/game.map.tilewidth + y/game.map.tileheight
+    if truncate then
+        return math.floor(ret_x),math.floor(ret_y)
+    else
+        return ret_x,ret_y
+    end
 end
 
 function to_canvas_coord(x,y)
-    local ret_x = (x-y)*game.map.tilewidth*0.5
-    local ret_y = (x+y)*game.map.tileheight*0.5
+    local ret_x = (x-y)*game.tile_size.w*0.5
+    local ret_y = (x+y)*game.tile_size.h*0.5
     return ret_x,ret_y
 end
 
 function get_current_chunk()
     --local player_tile_x, player_tile_y = to_tile_coord(game.pos[game.player].x, game.pos[game.player].y)
     local player_tile_x, player_tile_y = game.pos[game.player].x, game.pos[game.player].y
-    local x = math.floor(player_tile_x/game.chunksize)
-    local y = math.floor(player_tile_y/game.chunksize)
+    local x = math.floor((player_tile_x-1)/game.chunksize)
+    local y = math.floor((player_tile_y-1)/game.chunksize)
     return x,y
 end
 
@@ -153,17 +158,18 @@ end
 
 function add_player()
     local id = new_entity()
-    local x = 2
-    local y = 2
-    local w = 8
-    local h = 12
+    local x = 8
+    local y = 8
+    local w = 0.5
+    local h = 0.5
     local center_x = 0.5
-    local center_y = 1.0
-    local tile_w = 20
-    local tile_h = 20
-    local offset_x = (w-tile_w)*center_x
-    local offset_y = (h-tile_h)*center_y
-    set_sprite(id,"human_regular_hair.png","3-5",2,0.2,1,tile_w,tile_h,offset_x, offset_y)
+    local center_y = 1.1
+    local sprite_w = 20
+    local sprite_h = 20
+    local t_w, t_h = to_canvas_coord(w,h)
+    local offset_x = (-sprite_w)*center_x
+    local offset_y = (-sprite_h)*center_y
+    set_sprite(id,"human_regular_hair.png","3-5",2,0.2,1,sprite_w,sprite_h,offset_x, offset_y)
     game.dynamic[id] = true
 
     game.pos[id] = {x=x,y=y,vx=0,vy=0}
@@ -252,7 +258,7 @@ function update_player(dt,id)
 end
 
 function update_physics(dt,id)
-    local max_speed = 0.5
+    local max_speed = 0.3
     -- Update physics
     local sx = sign(game.pos[id].vx)
     local sy = sign(game.pos[id].vy)
@@ -260,10 +266,16 @@ function update_physics(dt,id)
     game.pos[id].vx = game.pos[id].vx*math.min(speed,max_speed)/speed
     game.pos[id].vy = game.pos[id].vy*math.min(speed,max_speed)/speed
 
+
     local damping_x = -game.pos[id].vx*0.3
     local damping_y = -game.pos[id].vy*0.3
     game.pos[id].vx = game.pos[id].vx + damping_x
     game.pos[id].vy = game.pos[id].vy + damping_y
+
+    -- Scale y velocity to make things feel a bit better
+    local vx,vy = to_canvas_coord(game.pos[id].vx, game.pos[id].vy)
+    vy = vy * 1.2
+    game.pos[id].vx, game.pos[id].vy = to_tile_coord(vx,vy,false)
 
     local dy = dt*(game.pos[id].vy)
     local dx = dt*(game.pos[id].vx) 
@@ -351,7 +363,7 @@ end
 function game:draw()
     love.graphics.setCanvas(game.canvas)
 
-    love.graphics.setBackgroundColor(1,1,1)
+    love.graphics.setBackgroundColor(89,125,206)
     love.graphics.clear()
 
     love.graphics.push()
