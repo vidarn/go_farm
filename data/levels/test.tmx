@@ -13,6 +13,7 @@
   <image source="../tiles/objects.png" width="57" height="32"/>
   <tile id="0">
    <properties>
+    <property name="collision" value="true"/>
     <property name="interactable_type" value="ball"/>
     <property name="spawn" value="interactable"/>
    </properties>
@@ -20,7 +21,7 @@
  </tileset>
  <layer name="Tile Layer 1" width="40" height="40">
   <data encoding="base64" compression="zlib">
-   eJzt1EsKgDAMRdFsrIj735QOLAZppLT5vMEbXBCEckyoTUTOu/aknzM7jLrJCsU3epdpXfFZXlRfNyL49F7RfHqPWXdmZX7fMyp9s/+YCt9fI1+Eccdn7RrBZ1m85+jt8zZG+DyNO74ZI7Kver8Z0Ucfog/FSB999NFHH330YfkQnJ6+mbMi8v7eKh/6/Oh7uwAsuoGG
+   eJzt1EsKgDAMRdFsrEj3vykdWCylkdLm8wZvcFEQyjFBi4jUp/LW30d2KTWTFopv9izSuuPTvKi+ZkTw1eGK5Ov3GPXN7MxvPCPTt/qPyfD9NfN5GE982q4RfJrFeo7WPmujh8/SeOJbMSL7svcbEX30IfpQjPTRRx999NFHH5YPwWnpWznLI+v3zfKhz4++rxsBMoGE
   </data>
  </layer>
  <layer name="game" width="40" height="40">
