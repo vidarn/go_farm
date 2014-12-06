@@ -133,7 +133,8 @@ function to_canvas_coord(x,y)
 end
 
 function get_current_chunk()
-    local player_tile_x, player_tile_y = to_tile_coord(game.pos[game.player].x, game.pos[game.player].y)
+    --local player_tile_x, player_tile_y = to_tile_coord(game.pos[game.player].x, game.pos[game.player].y)
+    local player_tile_x, player_tile_y = game.pos[game.player].x, game.pos[game.player].y
     local x = math.floor(player_tile_x/game.chunksize)
     local y = math.floor(player_tile_y/game.chunksize)
     return x,y
@@ -152,8 +153,8 @@ end
 
 function add_player()
     local id = new_entity()
-    local x = 100
-    local y = 200
+    local x = 2
+    local y = 2
     local w = 8
     local h = 12
     local center_x = 0.5
@@ -230,45 +231,40 @@ end
 
 function update_player(dt,id)
     local accel = 600.0
-    local damping_x = -game.pos[id].vx*0.3
-    local damping_y = -game.pos[id].vy*0.3
-    local walk_dir_x = 0
-    local walk_dir_y = 0
     if(love.keyboard.isDown('left') or love.keyboard.isDown("a")) then
         game.pos[id].vx = game.pos[id].vx - accel*dt
+        game.pos[id].vy = game.pos[id].vy + accel*dt
         game.direction[id] = -1
-        walk_dir_x = -1
     end
     if(love.keyboard.isDown('right') or love.keyboard.isDown("d")) then
         game.pos[id].vx = game.pos[id].vx + accel*dt
-        game.direction[id] = 1
-        walk_dir_x = 1
-    end
-    if(love.keyboard.isDown('up') or love.keyboard.isDown("w")) then
         game.pos[id].vy = game.pos[id].vy - accel*dt
         game.direction[id] = 1
-        walk_dir_y = -1
+    end
+    if(love.keyboard.isDown('up') or love.keyboard.isDown("w")) then
+        game.pos[id].vx = game.pos[id].vx - accel*dt
+        game.pos[id].vy = game.pos[id].vy - accel*dt
     end
     if(love.keyboard.isDown('down') or love.keyboard.isDown("s")) then
+        game.pos[id].vx = game.pos[id].vx + accel*dt
         game.pos[id].vy = game.pos[id].vy + accel*dt
-        game.direction[id] = 1
-        walk_dir_y = 1
-    end
-    if(walk_dir_x ~= sign(game.pos[id].vx)) then 
-        game.pos[id].vx = game.pos[id].vx + damping_x
-    end
-    if(walk_dir_y ~= sign(game.pos[id].vy)) then 
-        game.pos[id].vy = game.pos[id].vy + damping_y
     end
 end
 
 function update_physics(dt,id)
-    local max_speed = 100.0
+    local max_speed = 0.5
     -- Update physics
     local sx = sign(game.pos[id].vx)
     local sy = sign(game.pos[id].vy)
-    game.pos[id].vy = math.min(math.abs(game.pos[id].vy),max_speed*0.5)*sy
-    game.pos[id].vx = math.min(math.abs(game.pos[id].vx),max_speed)*sx
+    local speed = math.sqrt(sx*sx+sy*sy)
+    game.pos[id].vx = game.pos[id].vx*math.min(speed,max_speed)/speed
+    game.pos[id].vy = game.pos[id].vy*math.min(speed,max_speed)/speed
+
+    local damping_x = -game.pos[id].vx*0.3
+    local damping_y = -game.pos[id].vy*0.3
+    game.pos[id].vx = game.pos[id].vx + damping_x
+    game.pos[id].vy = game.pos[id].vy + damping_y
+
     local dy = dt*(game.pos[id].vy)
     local dx = dt*(game.pos[id].vx) 
     local new_x = game.pos[id].x + dx
@@ -408,7 +404,10 @@ function game:draw()
                 sprite.direction = game.direction[id]
                 sprite.anim:flipH()
             end
-            sprite.anim:draw(sprite.sprite,math.floor(game.pos[id].x)+sprite.offset_x,math.floor(game.pos[id].y)+sprite.offset_y)
+            local x,y = to_canvas_coord(game.pos[id].x, game.pos[id].y)
+            x = math.floor(x)
+            y = math.floor(y)
+            sprite.anim:draw(sprite.sprite,x+sprite.offset_x,y+sprite.offset_y)
         end
     end
 

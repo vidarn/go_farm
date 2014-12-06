@@ -1,0 +1,9 @@
+++++++ ATT GÖRA! +++++++
+
+* Gå i tiles                    -- Vidar
+* Collision detection           -- Vidar
+* Interagera med marken (gräva) -- Evoy
+* Pickup/drop
+* Växter som växer
+* Dag- och nattcykel
+
