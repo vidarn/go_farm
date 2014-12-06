@@ -8,6 +8,7 @@ return {
         interact = function(id,player_id)
             print("ball interact!" .. id)
             set_sprite(id,"objects.png",2,1,0.2,1,32,32,-16,-24)
+            return true
         end
     },
 
@@ -15,16 +16,13 @@ return {
         create = function(id)
             set_sprite(id,"tree.png",1,1,0.2,1,162,162,-162/2,-162+20)
         end,
-        interact = function(id)
-        end
     },
 
     sunflower = {
         create = function(id)
-            set_sprite(id,"plants.png",'1-4',1,0.8,1,32,64,-16,-64+8)
+            set_sprite(id,"plants.png",1,1,0.8,1,32,64,-16,-64+8)
+            game.plants[id] = {species="sunflower", growth=0.0, state=0}
         end,
-        interact = function(id)
-        end
     },
     shovel_iron = {
         create = function(id,player_id)
@@ -61,6 +59,7 @@ return {
             else 
                 print("NO SLOTS FREEEEEEEEEE")
             end
+            return true
         end,
 
         use = function(player_id)

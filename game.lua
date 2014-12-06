@@ -2,6 +2,8 @@ bump      = require "lib.bump.bump"
 anim8     = require "lib.anim8.anim8"
 timer     = require "lib.hump.timer"
 require "common"
+require "entity"
+require "game_control"
 
 game = {}
 game.interactable_functions = require "interactables"
@@ -15,6 +17,7 @@ game.camera = {
 
 game.chunksize = 6
 game.num_chunks = {w=0,h=0}
+game.debug = false
 
 
 game.shake_time = 0.0
@@ -67,196 +70,6 @@ function new_entity()
     return table.getn(game.alive)
 end
 
-function handle_collision(id, other, cols)
-    if game.players[id] then
-        if game.coins[other] then
-            kill_entity(other)
-        end
-    end
-end
-
-function get_tile_and_tileset(x,y,layer)
-    x = math.floor(x)
-    y = math.floor(y)
-    local tile = layer.data[x+(y-1)*layer.width]
-    if tile ~= nil then
-        tile = tile - 1
-        local tileset = nil
-        for _,ts in pairs(game.map.tilesets) do
-            if(tile < ts.lastgid) then
-                tileset = ts
-                break
-            end
-        end
-        if(tileset ~= nil) then
-            return tile,tileset
-        end
-    else
-        return nil, nil
-    end
-end
-
-function set_tile(x,y,layer,tile)
-    x = math.floor(x)
-    y = math.floor(y)
-    layer.data[x+(y-1)*layer.width] = tile+1
-end
-
-function prerun_physics(steps)
-    game.prerun = true
-    local dt = 0.01
-    for step = 1,steps do
-        for id,val in pairs(game.dynamic) do 
-            if game.alive[id] and val==true then
-                update_physics(dt,id)
-            end
-        end
-    end
-    game.prerun = false
-end
-
-function spawn_from_map(map,layername,hide_layer)
-    local layer = map.layers[layername]
-    if layer then 
-        for x = 1, layer.width do
-            for y = 1, layer.height do
-                local tile = layer.data[x+(y-1)*layer.width] - 1
-                if tile ~= nil then
-                    local tileset = nil
-                    for _,ts in pairs(map.tilesets) do
-                        if(tile < ts.lastgid) then
-                            tileset = ts
-                            break
-                        end
-                    end
-                    if tile > -1 then
-                        local properties = tileset.properties[tile]
-                        if properties then
-                            for key,val in pairs(properties) do
-                                if key == "spawn" then
-                                    if val == "coin" then
-                                        add_coin(x,y)
-                                    end
-                                    if val == "player" then
-                                        game.pos[game.player].x = x
-                                        game.pos[game.player].y = y
-                                    end
-                                end
-                                if key == "interactable_type" then
-                                    add_interactable(x,y,val)
-                                end
-                            end
-                        end
-                    end
-                end
-            end
-        end
-        if hide_layer then
-            layer.visible = false
-        end
-    else
-        print("Error in spawn_from_map: layer\""..layername.."\" does not exist")
-    end
-end
-
-function to_tile_coord(x,y,truncate)
-    if truncate == nil then truncate = true end
-    local ret_x = x/game.map.tilewidth + y/game.map.tileheight
-    local ret_y = -x/game.map.tilewidth + y/game.map.tileheight
-    if truncate then
-        return math.floor(ret_x),math.floor(ret_y)
-    else
-        return ret_x,ret_y
-    end
-end
-
-function to_canvas_coord(x,y)
-    local ret_x = (x-y)*game.tile_size.w*0.5
-    local ret_y = (x+y)*game.tile_size.h*0.5
-    return ret_x,ret_y
-end
-
-function get_current_chunk()
-    --local player_tile_x, player_tile_y = to_tile_coord(game.pos[game.player].x, game.pos[game.player].y)
-    local player_tile_x, player_tile_y = game.pos[game.player].x, game.pos[game.player].y
-    local x = math.floor((player_tile_x-1)/game.chunksize)
-    local y = math.floor((player_tile_y-1)/game.chunksize)
-    return x,y
-end
-
-function set_sprite(id,name,frames_x,frames_y,speed,direction,tile_w, tile_h, offset_x, offset_y)
-    local sprite = load_resource(name,"sprite")
-    local grid = anim8.newGrid(tile_w,tile_h,sprite:getWidth(),sprite:getHeight())
-    local anim = anim8.newAnimation(grid(frames_x,frames_y),speed)
-    if direction==-1 then
-        anim:flipH()
-    end
-    game.sprites[id] = {anim = anim, sprite = sprite, direction=direction, offset_x=offset_x, offset_y=offset_y, active=true}
-    game.direction[id] = direction
-end
-
-function add_player()
-    --NOTE will probably have to add some other type of table to link players with controllers.
-    local id = new_entity()
-    local x = 8
-    local y = 8
-    local w = 0.5
-    local h = 0.5
-    local center_x = 0.5
-    local center_y = 1.0
-    local sprite_w = 20
-    local sprite_h = 20
-    local t_w, t_h = to_canvas_coord(w,h)
-    local offset_x = (-sprite_w)*center_x
-    local offset_y = (-sprite_h)*center_y
-    set_sprite(id,"human_regular_hair.png","3-5",2,0.2,1,sprite_w,sprite_h,offset_x, offset_y)
-    game.dynamic[id] = true
-
-    game.player_count = game.player_count + 1
-    game.player_ids[game.player_count] = id
-
-    -- SET UP DEFAULT PLAYER!
-    game.players[id] = {
-        inventory_slots = 1,
-        active_inventory_slot = 1,
-        inventory = {}
-    }
-
-
-
-    game.pos[id] = {x=x,y=y,vx=0,vy=0}
-    game.world:add(id, game.pos[id].x,game.pos[id].y, w, h)
-    return id
-end
-
-function add_coin(x,y)
-    local id = new_entity()
-    local w = 16
-    local h = 16
-    local center_x = 0.5
-    local center_y = 1.0
-    local tile_w = 16
-    local tile_h = 16
-    local offset_x = (w-tile_w)*center_x
-    local offset_y = (h-tile_h)*center_y
-    set_sprite(id,"puhzil_0.png",2,7,0.2,1,tile_w,tile_h,offset_x,offset_y)
-    --game.dynamic[id] = true
-    game.coins[id] = true
-
-    game.pos[id] = {x=x,y=y,vx=0,vy=0}
-    game.world:add(id, game.pos[id].x,game.pos[id].y, w, h)
-    return id
-end
-
-function add_tile(x,y,w,h)
-    local id = new_entity()
-    game.tiles[id] = "sand"
-
-    game.pos[id] = {x=x,y=y,vx=0,vy=0}
-    game.world:add(id, game.pos[id].x,game.pos[id].y, w, h)
-    return id
-end
-
 
 function game:init()
     create_component_managers()
@@ -274,8 +87,6 @@ function game:init()
     end
     spawn_from_map(game.map,"objects",true)
     game.num_chunks = {w=game.map.width/game.chunksize, h=game.map.height/game.chunksize}
-
-    prerun_physics(100)
 end
 
 function game:keyreleased(key, code)
@@ -284,7 +95,7 @@ function game:keyreleased(key, code)
         gamestate.switch(g_menu)
     end
     if key == 'f1' then
-        debug.debug()
+        game.debug = true
     end
     if key == 'e' then
         interact(player_id) --keyboard is treated as player one
@@ -299,78 +110,6 @@ function game:keyreleased(key, code)
                 end
             end
         end
-    end
-end
-
-function add_interactable(x,y,interactable_type)
-    local id = new_entity()
-
-    game.interactables[id] = {}
-    game.interactables[id].functions = game.interactable_functions[interactable_type]
-    game.interactables[id].active = true --setting to false will make the interact command ignore this object
-    if game.interactables[id].functions then
-        game.pos[id] = {x=x,y=y,vx=0,vy=0}
-
-            -- execute object specific code, which is defined in interactables.lua
-        game.interactables[id].functions.create(id)
-    else
-        print("Error creating interactable \""..interactable_type.."\", interactable type not recognized")
-    end
-end
-
-function get_current_inv_id(player_id) 
-    local active_slot = game.players[player_id].active_inventory_slot
-    return game.players[player_id].inventory[active_slot]
-end
-
-function interact(player_id)
-    local use_range= math.pow(1.0,2)
-    local interacted = false
-    for id, interactable in pairs(game.interactables) do
-        --check that object is close
-        local dx = game.pos[id].x-game.pos[game.player].x
-        local dy = game.pos[id].y-game.pos[game.player].y
-        local distance = math.pow(dx,2) + math.pow(dy,2)
-        print("interact distance"..distance)
-        print("id",id,"active:",interactable.active)
-        if interactable.active and (  distance < use_range ) then
-            -- run function for interactable
-            interactable.functions.interact(id,player_id)
-            interacted = true
-        end 
-    end
-    if not interacted then
-        local active_slot = 1
-        local inv = game.players[player_id].inventory[active_slot]
-        if inv ~= nil then
-            local interactable = game.interactables[inv]
-            if interactable.functions.use ~= nil then
-                interactable.functions.use(player_id)
-            end
-        end
-    end
-end
-
-
-function update_player(dt,id)
-    local accel = 600.0
-    if(love.keyboard.isDown('left') or love.keyboard.isDown("a")) then
-        game.pos[id].vx = game.pos[id].vx - accel*dt
-        game.pos[id].vy = game.pos[id].vy + accel*dt
-        game.direction[id] = -1
-    end
-    if(love.keyboard.isDown('right') or love.keyboard.isDown("d")) then
-        game.pos[id].vx = game.pos[id].vx + accel*dt
-        game.pos[id].vy = game.pos[id].vy - accel*dt
-        game.direction[id] = 1
-    end
-    if(love.keyboard.isDown('up') or love.keyboard.isDown("w")) then
-        game.pos[id].vx = game.pos[id].vx - accel*dt
-        game.pos[id].vy = game.pos[id].vy - accel*dt
-    end
-    if(love.keyboard.isDown('down') or love.keyboard.isDown("s")) then
-        game.pos[id].vx = game.pos[id].vx + accel*dt
-        game.pos[id].vy = game.pos[id].vy + accel*dt
     end
 end
 
@@ -463,6 +202,7 @@ function game:update(dt)
             update_physics(dt,id)
         end
     end
+    update_plants(dt)
     update_player(dt,game.player)
     -- Update camera
     local camera_offset = 7
@@ -550,8 +290,10 @@ function game:draw()
                     y = math.floor(y)
                     sprite.anim:draw(sprite.sprite,x+sprite.offset_x,y+sprite.offset_y)
                     --for debugging, draw center
-                    --local cx, cy = to_canvas_coord(game.pos[id].x, game.pos[id].y)
-                    --love.graphics.rectangle("fill", cx, cy, 2,2)
+                    if game.debug then
+                        local cx, cy = to_canvas_coord(game.pos[id].x, game.pos[id].y)
+                        love.graphics.rectangle("fill", cx, cy, 2,2)
+                    end
                 end
             end
         end
