@@ -34,6 +34,11 @@
     <property name="interactable_type" value="tree"/>
    </properties>
   </tile>
+  <tile id="2">
+   <properties>
+    <property name="interactable_type" value="shovel_iron"/>
+   </properties>
+  </tile>
  </tileset>
  <layer name="ground" width="40" height="40">
   <data encoding="base64" compression="zlib">
@@ -42,7 +47,7 @@
  </layer>
  <layer name="objects" width="40" height="40">
   <data encoding="base64" compression="zlib">
-   eJzt1MEJACAMBME8bUj7L80CfPgKRjJTwcLBRdDVHK8LTqtg0w8qbnljayCbnwEAAIDeNvJsATU=
+   eJzt1LEJACAQA0DLX0jdfzNrsbASX7xr0gYCKYVf1bjdYNUSdnpBxi13sm/dY07gPdl/BgAAADhrALsyAbM=
   </data>
  </layer>
 </map>
