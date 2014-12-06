@@ -21,7 +21,7 @@ return {
 
     sunflower = {
         create = function(id)
-            set_sprite(id,"plants.png",'1-4',1,0.8,1,32,64,-16,-64+4)
+            set_sprite(id,"plants.png",'1-4',1,0.8,1,32,64,-16,-64+8)
         end,
         interact = function(id)
         end
