@@ -9,17 +9,14 @@ game = {}
 game.interactable_functions = require "interactables"
 game.inventory_item_functions = require "inventory_items"
 
-game.camera = {
-    x = 0.0, y=0.0,
-    shake_amplitude = 0.0, shake_frequency = 0.0,
-    offset_x = 0.0, offset_y = 0.0,
-    last_chunk_x = 0, last_chunk_y = 0
+game.cameras = {
 }
 
 game.chunksize = 6
 game.num_chunks = {w=0,h=0}
 game.chunks_to_draw = {}
 game.debug = false
+game.player_ids = {}
 
 
 game.shake_time = 0.0
@@ -30,12 +27,14 @@ game.tile_size = {
 
 game.alive = {}
 
+game.keys = {
+}
+
 
 game.components = {
     "sprites",
     "pos",
     "direction",
-    "player_ids",
     "players",
     "dynamic",
     "coins",
@@ -79,7 +78,27 @@ function game:init()
     game.tmp_canvas = love.graphics.newCanvas(g_screenres.w, g_screenres.h)
     game.canvas:setFilter('nearest','nearest')
     game.world = bump.newWorld(game.tile_size.w)
-    game.player = add_player()
+    add_player(8,8)
+    add_camera(game.player_ids[1])
+    game.keys[game.player_ids[1]] = {
+            up = 'up', 
+            down = 'down', 
+            left = 'left', 
+            right = 'right', 
+            interact = 'return',
+            drop = ' ',
+    }
+
+    add_player(8,9)
+    add_camera(game.player_ids[2])
+    game.keys[game.player_ids[2]] = {
+            up = 'w', 
+            down = 's', 
+            left = 'a', 
+            right = 'd', 
+            interact = 'e',
+            drop = 'q',
+    }
 
     -- load map
     game.map = load_resource("data/levels/test.lua","map")
@@ -93,23 +112,24 @@ function game:init()
 end
 
 function game:keyreleased(key, code)
-    local player_id = game.player_ids[1]
     if key == 'escape' then
         gamestate.switch(g_menu)
     end
     if key == 'f1' then
         game.debug = true
     end
-    if key == 'e' then
-        interact(player_id) --keyboard is treated as player one
-    end
-    if key == 'q' then
-        local interactable = game.interactables[get_current_inv_id(game.player_ids[1])]
-        print(interactable)
-        if interactable ~= nil then
-            if interactable.functions ~= nil then
-                if interactable.functions.drop ~= nil then
-                  interactable.functions.drop(player_id)
+    for _,player_id in pairs(game.player_ids) do
+        if key == game.keys[player_id].interact then
+            interact(player_id) --keyboard is treated as player one
+        end
+        if key == game.keys[player_id].drop then
+            local interactable = game.interactables[get_current_inv_id(player_id)]
+            print(interactable)
+            if interactable ~= nil then
+                if interactable.functions ~= nil then
+                    if interactable.functions.drop ~= nil then
+                      interactable.functions.drop(player_id)
+                    end
                 end
             end
         end
@@ -206,38 +226,51 @@ function game:update(dt)
         end
     end
     update_plants(dt)
-    update_player(dt,game.player)
 
-    -- update chunks
-    for _,chunk in pairs(game.chunks_to_draw) do
-        local curr_x, curr_y = get_current_chunk()
-        if chunk.x == curr_x and chunk.y == curr_y then
-            print('aha!')
-            chunk.alpha = chunk.alpha + dt*8
-            chunk.alpha = math.min(chunk.alpha, 1)
-        else
-            chunk.alpha = chunk.alpha - dt*8
-            if chunk.alpha < 0 then
-                game.chunks_to_draw[chunk.x + chunk.y*game.num_chunks.w] = nil
+    for a,player_id in pairs(game.player_ids) do
+        update_player(dt,player_id)
+        for _,chunk in pairs(game.chunks_to_draw[player_id]) do
+            local curr_x, curr_y = get_current_chunk(player_id)
+            chunk.active = chunk.active or (chunk.x == curr_x and chunk.y == curr_y)
+        end
+        -- update camera
+
+        local player_chunk_x, player_chunk_y = get_current_chunk(player_id)
+
+        local camera = game.cameras[player_id]
+
+        if player_chunk_x ~= camera.last_chunk_x or player_chunk_y ~= camera.last_chunk_y then
+            local offset_x, offset_y = to_canvas_coord(player_chunk_x*game.chunksize, player_chunk_y*game.chunksize)
+            if a == 1 then
+                offset_x = offset_x - game.chunksize*game.map.tilewidth*0.5 - 3
+            else
+                offset_x = offset_x + game.chunksize*game.map.tilewidth*0.5 + 3
             end
+
+            timer.tween(0.2,camera,{x =offset_x, y = game.map.tileheight*0 + offset_y},'in-out-expo')
+            game.chunks_to_draw[player_id][player_chunk_x+player_chunk_y*game.num_chunks.w] = {x=player_chunk_x, y=player_chunk_y, alpha=0.0, active=true}
+
+            camera.last_chunk_x = player_chunk_x
+            camera.last_chunk_y = player_chunk_y
+
+            camera.x = camera.x + camera.shake_amplitude*love.math.noise(12345.2 + game.shake_time*camera.shake_frequency)
+            camera.y = camera.y + camera.shake_amplitude*love.math.noise(31.5232 + game.shake_time*camera.shake_frequency)
+            game.shake_time = (game.shake_time + dt)%1.0
+        end
+        -- update chunks
+        for _,chunk in pairs(game.chunks_to_draw[player_id]) do
+            if chunk.active == true then
+                chunk.alpha = chunk.alpha + dt*8
+                chunk.alpha = math.min(chunk.alpha, 1)
+            else
+                chunk.alpha = chunk.alpha - dt*8
+                if chunk.alpha < 0 then
+                    game.chunks_to_draw[player_id][chunk.x + chunk.y*game.num_chunks.w] = nil
+                end
+            end
+            chunk.active = false
         end
     end
-
-    -- update camera
-    local player_chunk_x, player_chunk_y = get_current_chunk()
-
-    if player_chunk_x ~= game.camera.last_chunk_x or player_chunk_y ~= game.camera.last_chunk_y then
-        local offset_x, offset_y = to_canvas_coord(player_chunk_x*game.chunksize, player_chunk_y*game.chunksize)
-        timer.tween(0.2,game.camera,{x =offset_x, y = game.map.tileheight*0 + offset_y},'in-out-expo')
-        game.chunks_to_draw[player_chunk_x+player_chunk_y*game.num_chunks.w] = {x=player_chunk_x, y=player_chunk_y, alpha=0.0}
-    end
-
-    game.camera.last_chunk_x = player_chunk_x
-    game.camera.last_chunk_y = player_chunk_y
-
-    game.camera.x = game.camera.x + game.camera.shake_amplitude*love.math.noise(12345.2 + game.shake_time*game.camera.shake_frequency)
-    game.camera.y = game.camera.y + game.camera.shake_amplitude*love.math.noise(31.5232 + game.shake_time*game.camera.shake_frequency)
-    game.shake_time = (game.shake_time + dt)%1.0
 end
 
 function draw_map_tile(x,y,layer)
@@ -265,75 +298,77 @@ function game:draw()
 
     love.graphics.push()
     local bkg_parallax = 0.4
-    love.graphics.translate(math.floor(-game.camera.x*bkg_parallax), math.floor(-game.camera.y*bkg_parallax))
-    love.graphics.pop()
+    for _,player_id in pairs(game.player_ids) do
+        local camera = game.cameras[player_id]
 
-    love.graphics.push()
-    love.graphics.translate(math.floor(-game.camera.x + g_screenres.w*0.5), math.floor(-game.camera.y + g_screenres.h*0.5))
+        love.graphics.pop()
+        love.graphics.push()
+        love.graphics.translate(math.floor(-camera.x + g_screenres.w*0.5), math.floor(-camera.y + g_screenres.h*0.5))
 
-    love.graphics.setColor(255,255,255)
-    -- draw the ground, should always be behind the player
-    for chunk_x = 0, game.num_chunks.w do
-        for chunk_y = 0, game.num_chunks.h do
-            local chunk = game.chunks_to_draw[chunk_x + game.num_chunks.w*chunk_y]
-            if chunk ~= nil then
-                love.graphics.setCanvas(game.tmp_canvas)
-                love.graphics.setColor(255,255,255)
-                love.graphics.setBackgroundColor(0,0,0,0)
-                love.graphics.clear()
-                for x = chunk_x*game.chunksize+1, (chunk_x+1)*game.chunksize do
-                    for y = chunk_y*game.chunksize+1, (chunk_y+1)*game.chunksize do
-                        if x >= 1 and x < game.map.width and y >=1 and y < game.map.height then
-                            draw_map_tile(x,y,game.map.layers['ground'])
+        love.graphics.setColor(255,255,255)
+        for chunk_x = 0, game.num_chunks.w do
+            for chunk_y = 0, game.num_chunks.h do
+                local chunk = game.chunks_to_draw[player_id][chunk_x + game.num_chunks.w*chunk_y]
+                if chunk ~= nil then
+                    love.graphics.setCanvas(game.tmp_canvas)
+                    love.graphics.setColor(255,255,255)
+                    love.graphics.setBackgroundColor(0,0,0,0)
+                    love.graphics.clear()
+                    -- draw the ground, should always be behind the player
+                    for x = chunk_x*game.chunksize+1, (chunk_x+1)*game.chunksize do
+                        for y = chunk_y*game.chunksize+1, (chunk_y+1)*game.chunksize do
+                            if x >= 1 and x < game.map.width and y >=1 and y < game.map.height then
+                                draw_map_tile(x,y,game.map.layers['ground'])
+                            end
                         end
                     end
-                end
 
-                -- draw all objects and decoration in the correct order
-                for x = chunk_x*game.chunksize+1, (chunk_x+1)*game.chunksize do
-                    for y = chunk_y*game.chunksize+1, (chunk_y+1)*game.chunksize do
-                        if x >= 1 and x < game.map.width and y >=1 and y < game.map.height then
-                            for layername,layer in pairs(game.map.layers) do
-                                if layername ~= 'ground' then
-                                    draw_map_tile(x,y,layer)
+                    -- draw all objects and decoration in the correct order
+                    for x = chunk_x*game.chunksize+1, (chunk_x+1)*game.chunksize do
+                        for y = chunk_y*game.chunksize+1, (chunk_y+1)*game.chunksize do
+                            if x >= 1 and x < game.map.width and y >=1 and y < game.map.height then
+                                for layername,layer in pairs(game.map.layers) do
+                                    if layername ~= 'ground' then
+                                        draw_map_tile(x,y,layer)
+                                    end
                                 end
-                            end
-                            local to_draw = {}
-                            --draw sprites
-                            for id,sprite in pairs(game.sprites) do
-                                if game.alive[id] == true and sprite.active then
-                                    if math.floor(game.pos[id].x) == x and math.floor(game.pos[id].y) == y then
-                                        table.insert(to_draw,id)
+                                local to_draw = {}
+                                --draw sprites
+                                for id,sprite in pairs(game.sprites) do
+                                    if game.alive[id] == true and sprite.active then
+                                        if math.floor(game.pos[id].x) == x and math.floor(game.pos[id].y) == y then
+                                            table.insert(to_draw,id)
+                                        end
+                                    end
+                                end
+                                table.sort(to_draw, function(a,b) return (game.pos[a].x+game.pos[a].y) < (game.pos[b].x+game.pos[b].y) end)
+                                for i=1 , #to_draw do
+                                    local id = to_draw[i]
+                                    local sprite = game.sprites[id]
+                                    if game.direction[id] ~= sprite.direction then
+                                        sprite.direction = game.direction[id]
+                                        sprite.anim:flipH()
+                                    end
+                                    local x,y = to_canvas_coord(game.pos[id].x, game.pos[id].y)
+                                    x = math.floor(x)
+                                    y = math.floor(y)
+                                    sprite.anim:draw(sprite.sprite,x+sprite.offset_x,y+sprite.offset_y)
+                                    --for debugging, draw center
+                                    if game.debug then
+                                        local cx, cy = to_canvas_coord(game.pos[id].x, game.pos[id].y)
+                                        love.graphics.rectangle("fill", cx, cy, 2,2)
                                     end
                                 end
                             end
-                            table.sort(to_draw, function(a,b) return (game.pos[a].x+game.pos[a].y) < (game.pos[b].x+game.pos[b].y) end)
-                            for i=1 , #to_draw do
-                                local id = to_draw[i]
-                                local sprite = game.sprites[id]
-                                if game.direction[id] ~= sprite.direction then
-                                    sprite.direction = game.direction[id]
-                                    sprite.anim:flipH()
-                                end
-                                local x,y = to_canvas_coord(game.pos[id].x, game.pos[id].y)
-                                x = math.floor(x)
-                                y = math.floor(y)
-                                sprite.anim:draw(sprite.sprite,x+sprite.offset_x,y+sprite.offset_y)
-                                --for debugging, draw center
-                                if game.debug then
-                                    local cx, cy = to_canvas_coord(game.pos[id].x, game.pos[id].y)
-                                    love.graphics.rectangle("fill", cx, cy, 2,2)
-                                end
-                            end
                         end
                     end
+                    love.graphics.push()
+                    love.graphics.origin()
+                    love.graphics.setColor(255,255,255,255*chunk.alpha)
+                    love.graphics.setCanvas(game.canvas)
+                    love.graphics.draw(game.tmp_canvas)
+                    love.graphics.pop()
                 end
-                love.graphics.push()
-                love.graphics.origin()
-                love.graphics.setColor(255,255,255,255*chunk.alpha)
-                love.graphics.setCanvas(game.canvas)
-                love.graphics.draw(game.tmp_canvas)
-                love.graphics.pop()
             end
         end
     end

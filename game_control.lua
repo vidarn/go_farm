@@ -28,10 +28,6 @@ function spawn_from_map(map,layername,hide_layer)
                                     if val == "coin" then
                                         add_coin(x,y)
                                     end
-                                    if val == "player" then
-                                        game.pos[game.player].x = x
-                                        game.pos[game.player].y = y
-                                    end
                                 end
                                 if key == "interactable_type" then
                                     add_interactable(x,y,val)
@@ -55,8 +51,8 @@ function interact(player_id)
     local interacted = false
     for id, interactable in pairs(game.interactables) do
         --check that object is close
-        local dx = game.pos[id].x-game.pos[game.player].x
-        local dy = game.pos[id].y-game.pos[game.player].y
+        local dx = game.pos[id].x-game.pos[player_id].x
+        local dy = game.pos[id].y-game.pos[player_id].y
         dx, dy = to_canvas_coord(dx,dy)
         local distance = math.pow(dx,2) + math.pow(dy,2)
         print("interact distance"..distance)
@@ -84,21 +80,22 @@ end
 
 function update_player(dt,id)
     local accel = 600.0
-    if(love.keyboard.isDown('left') or love.keyboard.isDown("a")) then
+
+    if love.keyboard.isDown(game.keys[id].left) then
         game.pos[id].vx = game.pos[id].vx - accel*dt
         game.pos[id].vy = game.pos[id].vy + accel*dt
         game.direction[id] = -1
     end
-    if(love.keyboard.isDown('right') or love.keyboard.isDown("d")) then
+    if love.keyboard.isDown(game.keys[id].right) then
         game.pos[id].vx = game.pos[id].vx + accel*dt
         game.pos[id].vy = game.pos[id].vy - accel*dt
         game.direction[id] = 1
     end
-    if(love.keyboard.isDown('up') or love.keyboard.isDown("w")) then
+    if love.keyboard.isDown(game.keys[id].up) then
         game.pos[id].vx = game.pos[id].vx - accel*dt
         game.pos[id].vy = game.pos[id].vy - accel*dt
     end
-    if(love.keyboard.isDown('down') or love.keyboard.isDown("s")) then
+    if love.keyboard.isDown(game.keys[id].down) then
         game.pos[id].vx = game.pos[id].vx + accel*dt
         game.pos[id].vy = game.pos[id].vy + accel*dt
     end
