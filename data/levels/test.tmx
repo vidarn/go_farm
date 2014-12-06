@@ -3,7 +3,22 @@
  <tileset firstgid="1" name="block" tilewidth="32" tileheight="32">
   <tileoffset x="0" y="16"/>
   <image source="../tiles/block.png" width="1920" height="1147"/>
+  <tile id="0">
+   <properties>
+    <property name="digable" value="true"/>
+   </properties>
+  </tile>
+  <tile id="1">
+   <properties>
+    <property name="digable" value="true"/>
+   </properties>
+  </tile>
   <tile id="60">
+   <properties>
+    <property name="digable" value="true"/>
+   </properties>
+  </tile>
+  <tile id="61">
    <properties>
     <property name="digable" value="true"/>
    </properties>
@@ -16,6 +31,16 @@
   <tile id="64">
    <properties>
     <property name="hoeable" value="true"/>
+   </properties>
+  </tile>
+  <tile id="120">
+   <properties>
+    <property name="digable" value="true"/>
+   </properties>
+  </tile>
+  <tile id="121">
+   <properties>
+    <property name="digable" value="true"/>
    </properties>
   </tile>
  </tileset>
@@ -42,7 +67,7 @@
  </tileset>
  <layer name="ground" width="40" height="40">
   <data encoding="base64" compression="zlib">
-   eJzt1DEOABAQRNG9mIj7X0qpEgp2x/rFb+UZiWJmRaA6KdqFz9fXxH3q+73k83zrjPvhw4dvncc/k3k/fPh+9akY8eHDhw8fPnxaPgXnSd/OWTc6fd8on/p++EYdCCSASg==
+   eJzFlltuBCEMBIe51xDlWJvTZyMNUqXSBvKR7AeaJ6Zpt9204zjac5z3tT/Hdd+3+/7Eu44r53T92xFj/Nvx3c9vxUjziNPXgfk6MuaG/zvenYh9hecZvqYYnGs+xzdyZv7Gf8bBeeZ/ho/jA/fka8QmZvLntZlj8nQdOd8VPq7/eI73+0rM5sW6Mk9c35pJ+5vh8xqPe/Tjey6b1rTGrE3roGFcIV6Fj/EY9wLWpH3zYLzUl+vZ788JPurA2EauH0fOrTlzn6p00I6ffK7057w9NBzTde0aMe7Uu8jHqn6Zj/GOWnRPTX2cOiEu8td0P553+HMf80i6N3bjcW+nNjl/xV8LMe0B1pv7WKUta9P10hb8uVexPomN8V0v/pYwcv/+b9Zfkl8YY8qPa8McOkbKxZgz448cWLdf8d6Fz5zxX+uq0uGufyT/TueMykOJJ/mLcVk3q/5MjaSzjOsgac/+14+fmvEe3Udn/uua9bPz4b3bT63hqk/v+K+91Ny595ivVBfmMvm1dbSqX+eReTKfqc9YG+bfsa3V39RvtWfXNrU/85krxGAtzvClMz5jMr/uu869zywJi88IY94MH//ndeat9irvqdKKY636C/GluvJ98j9ryr626gMrfGexdvLadLZx/zOGVPuu4RV/lf9bM67rqqarejP28X6Gzz3A3jE73808LnlIOoPs8OccXmFd58xzfM5xLO+J9yv+zEulb59xEjf2l+THrukVf/QJa9+5JX7XQMLDPbp+xvwd/XGOzwHWPOsm+ZvfGZf79I7+qGtrqms993Su5xwnD/lNf3FNVdp3r7GOqt7m3mPsO/6b/Kjque575taeZz9OXj/Dl85aVd267ma6c816j7zfwcc9pZ4/vu3E+ovhumQd+Cz1CnxVj3dfeBV/9o9qvDK/7A3pbPLf/H0CoCLzLw==
   </data>
  </layer>
  <layer name="objects" width="40" height="40">
