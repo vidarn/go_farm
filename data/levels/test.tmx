@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="isometric" renderorder="right-down" width="40" height="40" tilewidth="32" tileheight="16">
+ <tileset firstgid="1" name="block" tilewidth="32" tileheight="32">
+  <image source="../../../ludum_warmup/data/tiles/block.png" width="1920" height="1147"/>
+ </tileset>
+ <layer name="Tile Layer 1" width="40" height="40">
+  <data encoding="base64" compression="zlib">
+   eJztlEEKwDAIBO3DQvH/n+qhFES05lLXwh6GkOSQYTWqiByGcxiT3bzfHxzRLpUj2qNyRDsQQgghRGSZdZn9VNB+/v1oj3RcCVMytE6aOCL91Hh5P3TvaUCWb3XW5fdGd66Vj++/LONuv6yWK7hH9l/0j7v8vM/TX5WfzfJrP3+2M5tR8yd7N8oPPRd9HbMaox3RNd31m8ikrOhIyM0FpoiFsA==
+  </data>
+ </layer>
+ <layer name="game" width="40" height="40">
+  <data encoding="base64" compression="zlib">
+   eJztzjENAAAIA7BZw78pJCxcPK2CJgAAAAAAADfzHSgWQaAAQg==
+  </data>
+ </layer>
+</map>

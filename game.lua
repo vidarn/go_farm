@@ -58,16 +58,6 @@ function handle_collision(id, other, cols)
         if game.coins[other] then
             kill_entity(other)
         end
-        if game.tiles[other] then
-            for _,col in pairs(cols) do
-                local tl, tt, nx, ny = col.col:getTouch()
-                if ny == -1 and col.dir == 'y' then
-                    game.players[id].jump_cooldown = 0.2
-                elseif ny == 1 and col.dir == 'y' then
-		    game.pos[id].vy = 0
-                end
-            end
-        end
     end
 end
 
@@ -151,7 +141,6 @@ function add_player()
     local offset_x = (w-tile_w)*center_x
     local offset_y = (h-tile_h)*center_y
     set_sprite(id,"human_regular_hair.png","3-5",2,0.2,1,tile_w,tile_h,offset_x, offset_y)
-    game.players[id] = {jump_cooldown = 0}
     game.dynamic[id] = true
 
     game.pos[id] = {x=x,y=y,vx=0,vy=0}
@@ -192,7 +181,6 @@ function game:init()
     create_component_managers()
     game.canvas = love.graphics.newCanvas(g_screenres.w, g_screenres.h)
     game.canvas:setFilter('nearest','nearest')
-    game.bkg = load_resource("bkg.png","sprite")
     game.world = bump.newWorld(game.tile_size.w)
     game.player = add_player()
 
@@ -219,7 +207,6 @@ end
 
 function update_player(dt,id)
     local accel = 600.0
-    local jump = 400.0
     local damping = -game.pos[id].vx*0.3
     local walk_dir = 0
     if(love.keyboard.isDown('left') or love.keyboard.isDown("a")) then
@@ -233,22 +220,15 @@ function update_player(dt,id)
         walk_dir = 1
     end
     if(love.keyboard.isDown('up') or love.keyboard.isDown("w")) then
-        if(game.players[id].jump_cooldown > 0) then 
-            game.pos[id].vy = -jump
-        end
     end
-    game.players[id].jump_cooldown = game.players[id].jump_cooldown - dt
     if(walk_dir ~= sign(game.pos[id].vx)) then 
         game.pos[id].vx = game.pos[id].vx + damping
     end
-    -- DEBUG, temporary allow player to jump even when not on the ground
-    --game.players[id].jump_cooldown = 0.1
 end
 
 function update_physics(dt,id)
     local max_speed = 200.0
     -- Update physics
-    game.pos[id].vy = game.pos[id].vy + 20
     local sx = sign(game.pos[id].vx)
     local sy = sign(game.pos[id].vy)
     game.pos[id].vy = math.min(math.abs(game.pos[id].vy),max_speed)*sy
@@ -271,10 +251,6 @@ function update_physics(dt,id)
             if game.tiles[other] then
                 if not moved then
                     new_y = tt
-                    -- TODO(Vidar) check the normal of the surface
-                    --if game.players[id] then
-                        --game.players[id].jump_cooldown = 0.2
-                    --end
                     moved = true
                 end
             end
@@ -347,7 +323,6 @@ function game:draw()
     love.graphics.push()
     local bkg_parallax = 0.4
     love.graphics.translate(math.floor(-game.camera.x*bkg_parallax), math.floor(-game.camera.y*bkg_parallax))
-    love.graphics.draw(game.bkg)
     love.graphics.pop()
 
     love.graphics.push()
@@ -356,22 +331,42 @@ function game:draw()
     love.graphics.setColor(255,255,255)
     -- draw map
     for _,layer in pairs(game.map.layers) do
-        if layer.name ~= "player" and layer.visible ~= false then
-            for _,sprite_batch in pairs(layer.sprite_batches) do
-                love.graphics.draw(sprite_batch)
-            end
-        else
-            -- draw entities on the correct layer
-            -- draw all sprites
-            for id,sprite in pairs(game.sprites) do
-                if game.alive[id] == true then
-                    if game.direction[id] ~= sprite.direction then
-                        sprite.direction = game.direction[id]
-                        sprite.anim:flipH()
+        if layer.name ~= "game" and layer.visible ~= false then
+            for x = 1, layer.width do
+                for y = 1, layer.height do
+                    local tile = layer.data[x+(y-1)*layer.width] - 1
+                    if tile ~= nil then
+                        local tileset = nil
+                        for _,ts in pairs(game.map.tilesets) do
+                            if(tile < ts.lastgid) then
+                                tileset = ts
+                                break
+                            end
+                        end
+                        if(tileset ~= nil) then
+                            local localgid = tile + 1 - tileset.firstgid
+                            local tx = localgid % tileset.tiles_x
+                            local ty = math.floor(localgid / tileset.tiles_x)
+                            local tw = tileset.tilewidth
+                            local th = tileset.tileheight
+                            local quad = love.graphics.newQuad(tx*tw, ty*th,tw,th,tileset.imagewidth, tileset.imageheight)
+                            local draw_x = (x-y)*game.map.tilewidth*0.5
+                            local draw_y = (x+y)*game.map.tileheight*0.5
+                            love.graphics.draw(tileset.loaded_image, quad, draw_x, draw_y)
+                        end
                     end
-                    sprite.anim:draw(sprite.sprite,math.floor(game.pos[id].x)+sprite.offset_x,math.floor(game.pos[id].y)+sprite.offset_y)
                 end
             end
+        end
+    end
+
+    for id,sprite in pairs(game.sprites) do
+        if game.alive[id] == true then
+            if game.direction[id] ~= sprite.direction then
+                sprite.direction = game.direction[id]
+                sprite.anim:flipH()
+            end
+            sprite.anim:draw(sprite.sprite,math.floor(game.pos[id].x)+sprite.offset_x,math.floor(game.pos[id].y)+sprite.offset_y)
         end
     end
 
