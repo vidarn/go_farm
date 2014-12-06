@@ -127,9 +127,6 @@ function spawn_from_map(map,layername,hide_layer)
                         if properties then
                             for key,val in pairs(properties) do
                                 if key == "spawn" then
-                                    if val == "interactable" then
-                                        add_interactable(x,y,properties.interactable_type)
-                                    end
                                     if val == "coin" then
                                         add_coin(x,y)
                                     end
@@ -137,6 +134,9 @@ function spawn_from_map(map,layername,hide_layer)
                                         game.pos[game.player].x = x
                                         game.pos[game.player].y = y
                                     end
+                                end
+                                if key == "interactable_type" then
+                                    add_interactable(x,y,val)
                                 end
                             end
                         end
@@ -195,7 +195,7 @@ function add_player()
     local w = 0.5
     local h = 0.5
     local center_x = 0.5
-    local center_y = 1.1
+    local center_y = 1.0
     local sprite_w = 20
     local sprite_h = 20
     local t_w, t_h = to_canvas_coord(w,h)
@@ -208,7 +208,6 @@ function add_player()
     game.world:add(id, game.pos[id].x,game.pos[id].y, w, h)
     return id
 end
-
 
 function add_coin(x,y)
     local id = new_entity()
@@ -275,10 +274,14 @@ function add_interactable(x,y,interactable_type)
     local id = new_entity()
 
     game.interactables[id] = game.interactable_functions[interactable_type]
-    game.pos[id] = {x=x,y=y,vx=0,vy=0}
+    if game.interactables[id] ~= nil then
+        game.pos[id] = {x=x,y=y,vx=0,vy=0}
 
-    -- execute object specific code, which is defined in nteractables.lua
-    game.interactables[id].create(id)
+        -- execute object specific code, which is defined in interactables.lua
+        game.interactables[id].create(id)
+    else
+        print("Error creating interactable \""..interactable_type.."\", interactable type not recognized")
+    end
 end
 
 function interact()
@@ -441,6 +444,23 @@ function game:update(dt)
     game.shake_time = (game.shake_time + dt)%1.0
 end
 
+function draw_map_tile(x,y,layer)
+    if layer.visible ~= false then
+        local tile,tileset = get_tile_and_tileset(x,y,layer)
+        if tile ~= nil then
+            local localgid = tile + 1 - tileset.firstgid
+            local tx = localgid % tileset.tiles_x
+            local ty = math.floor(localgid / tileset.tiles_x)
+            local tw = tileset.tilewidth
+            local th = tileset.tileheight
+            local quad = love.graphics.newQuad(tx*tw, ty*th,tw,th,tileset.imagewidth, tileset.imageheight)
+            local draw_x = (x-y-1)*game.map.tilewidth*0.5
+            local draw_y = (x+y-1)*game.map.tileheight*0.5
+            love.graphics.draw(tileset.loaded_image, quad, draw_x, draw_y)
+        end
+    end
+end
+
 function game:draw()
     love.graphics.setCanvas(game.canvas)
 
@@ -456,24 +476,39 @@ function game:draw()
     love.graphics.translate(math.floor(-game.camera.x + g_screenres.w*0.5), math.floor(-game.camera.y + g_screenres.h*0.5))
 
     love.graphics.setColor(255,255,255)
-    -- draw map
+    -- draw the ground, should always be behind the player
     local chunk_x, chunk_y = get_current_chunk()
     for x = chunk_x*game.chunksize+1, (chunk_x+1)*game.chunksize do
         for y = chunk_y*game.chunksize+1, (chunk_y+1)*game.chunksize do
             if x >= 1 and x < game.map.width and y >=1 and y < game.map.height then
-                for _,layer in pairs(game.map.layers) do
-                    if layer.visible ~= false then
-                        local tile,tileset = get_tile_and_tileset(x,y,layer)
-                        if tile ~= nil then
-                            local localgid = tile + 1 - tileset.firstgid
-                            local tx = localgid % tileset.tiles_x
-                            local ty = math.floor(localgid / tileset.tiles_x)
-                            local tw = tileset.tilewidth
-                            local th = tileset.tileheight
-                            local quad = love.graphics.newQuad(tx*tw, ty*th,tw,th,tileset.imagewidth, tileset.imageheight)
-                            local draw_x = (x-y-1)*game.map.tilewidth*0.5
-                            local draw_y = (x+y-1)*game.map.tileheight*0.5
-                            love.graphics.draw(tileset.loaded_image, quad, draw_x, draw_y)
+                draw_map_tile(x,y,game.map.layers['ground'])
+            end
+        end
+    end
+
+    -- draw all objects and decoration in the correct order
+    for x = chunk_x*game.chunksize+1, (chunk_x+1)*game.chunksize do
+        for y = chunk_y*game.chunksize+1, (chunk_y+1)*game.chunksize do
+            if x >= 1 and x < game.map.width and y >=1 and y < game.map.height then
+                for layername,layer in pairs(game.map.layers) do
+                    if layername ~= 'ground' then
+                        draw_map_tile(x,y,layer)
+                    end
+                end
+                for id,sprite in pairs(game.sprites) do
+                    if game.alive[id] == true then
+                        if math.floor(game.pos[id].x) == x and math.floor(game.pos[id].y) == y then
+                            if game.direction[id] ~= sprite.direction then
+                                sprite.direction = game.direction[id]
+                                sprite.anim:flipH()
+                            end
+                            local x,y = to_canvas_coord(game.pos[id].x, game.pos[id].y)
+                            x = math.floor(x)
+                            y = math.floor(y)
+                            sprite.anim:draw(sprite.sprite,x+sprite.offset_x,y+sprite.offset_y)
+                            --for debugging, draw center
+                            --local cx, cy = to_canvas_coord(game.pos[id].x, game.pos[id].y)
+                            --love.graphics.rectangle("fill", cx, cy, 2,2)
                         end
                     end
                 end
@@ -481,21 +516,6 @@ function game:draw()
         end
     end
 
-    for id,sprite in pairs(game.sprites) do
-        if game.alive[id] == true then
-            if game.direction[id] ~= sprite.direction then
-                sprite.direction = game.direction[id]
-                sprite.anim:flipH()
-            end
-            local x,y = to_canvas_coord(game.pos[id].x, game.pos[id].y)
-            x = math.floor(x)
-            y = math.floor(y)
-            sprite.anim:draw(sprite.sprite,x+sprite.offset_x,y+sprite.offset_y)
-            --for debugging, draw center
-            --local cx, cy = to_canvas_coord(game.pos[id].x, game.pos[id].y)
-            --love.graphics.rectangle("fill", cx, cy, 2,2)
-        end
-    end
 
     -- Draw scaled canvas to screen
     love.graphics.pop()

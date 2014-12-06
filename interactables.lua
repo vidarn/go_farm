@@ -11,7 +11,12 @@ return {
         end
     },
 
-    plant = {
+    tree = {
+        create = function(id)
+            set_sprite(id,"tree.png",1,1,0.2,1,162,162,-162/2,-162+20)
+        end,
+        interact = function(id)
+        end
     }
 
 }

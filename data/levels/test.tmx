@@ -15,7 +15,7 @@
   </tile>
  </tileset>
  <tileset firstgid="2101" name="objects" tilewidth="32" tileheight="32">
-  <image source="../tiles/objects.png" width="57" height="32"/>
+  <image source="../tiles/objects.png" width="128" height="32"/>
   <tile id="0">
    <properties>
     <property name="collision" value="true"/>
@@ -23,20 +23,21 @@
     <property name="spawn" value="interactable"/>
    </properties>
   </tile>
+  <tile id="1">
+   <properties>
+    <property name="collision" value="true"/>
+    <property name="interactable_type" value="tree"/>
+   </properties>
+  </tile>
  </tileset>
  <layer name="ground" width="40" height="40">
   <data encoding="base64" compression="zlib">
-   eJzt1EsKwCAQg+G52FC8/6W6LJRKtT4S6L8ILhzkM4IZEWmQoxK1q9Wntn/x7fSO+jLWGnt95bY6+crLrNqXD/vq/mozKzvr9SnT41P8jSM+t/7c3xcfPnz4/uBzMeLDhw8fPnz4vHwOzpm+lrNWZPZ9VT73/vBdOQHLq4C+
-  </data>
- </layer>
- <layer name="game" width="40" height="40">
-  <data encoding="base64" compression="zlib">
-   eJztzjENAAAIA7BZw78pJCxcPK2CJgAAAAAAADfzHSgWQaAAQg==
+   eJzt1FEKwCAMA9BerIze/1L7HIzJ7LRLxHwEPyzyjKCbmRPkaATt6vWh7V98f3pHfW61xqwvbiuTL15m0T5/2Ef315qp7CzrQybjQ/yNIz62/tjfdzVfkPvY+5NPvl19LEb55JNPPvnkk4/Lx+Cc6es5qyKz74vysfcn35UTDCqAwg==
   </data>
  </layer>
  <layer name="objects" width="40" height="40">
   <data encoding="base64" compression="zlib">
-   eJzt0TENAAAIwDBODOHfGjc/CQetgiWL4KvK6wK2eAkAAAAAMDWj0gB7
+   eJzt1LEJAEAIBEFDG3r7L80CTB8MnKlg4eAiuOrldgG/2BJgKt8IAAAApzWKzgC5
   </data>
  </layer>
 </map>
