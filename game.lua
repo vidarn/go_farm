@@ -87,6 +87,7 @@ function game:init()
             right = 'right', 
             interact = 'return',
             drop = ' ',
+            cycle = 'backspace',
     }
 
     add_player(8,9)
@@ -98,6 +99,7 @@ function game:init()
             right = 'd', 
             interact = 'e',
             drop = 'q',
+            cycle = 'tab',
     }
 
     -- load map
@@ -133,9 +135,10 @@ function game:keyreleased(key, code)
                 end
             end
         end
-    if key == 'tab' then
-        next_inventory_item(player_id)
-    end
+        if key == game.keys[player_id].cycle then
+            print('smurf')
+            next_inventory_item(player_id)
+        end
     end
 end
 
@@ -388,7 +391,12 @@ function game:draw()
             local framesize = 32
             local margin = 40
             for frame = 1, player.inventory_slots, 1 do 
-                local x = g_screenres.w-margin - framesize*(frame-1)
+                local x
+                if player_number == 1 then
+                    x = g_screenres.w-margin - framesize*(frame-1)
+                else
+                    x = margin + framesize*(frame-1)
+                end
                 local y = g_screenres.h-margin
                 love.graphics.rectangle("fill",x,y,framesize,framesize)
             end
@@ -397,7 +405,12 @@ function game:draw()
             for key,item_id in pairs(player.inventory) do
                 local sprite = game.sprites[item_id]
                 if sprite ~= nil and item_id ~= nil and key ~= nil then
-                    local x = g_screenres.w-margin - framesize*(key-1)
+                    local x
+                    if player_number == 1 then
+                        x = g_screenres.w-margin - framesize*(key-1)
+                    else
+                        x = margin + framesize*(key-1)
+                    end
                     local y = g_screenres.h-margin
                     sprite.anim:draw(sprite.sprite,x,y-8)
                 end
@@ -405,7 +418,12 @@ function game:draw()
             
             -- highlight active slot
             love.graphics.setColor(255,255,255)
-            local x = g_screenres.w-margin - framesize*(player.active_inventory_slot-1)
+            local x
+            if player_number == 1 then
+                x = g_screenres.w-margin - framesize*(player.active_inventory_slot-1)
+            else
+                x = margin + framesize*(player.active_inventory_slot-1)
+            end
             local y = g_screenres.h-margin
             love.graphics.rectangle("line",x,y,framesize,framesize)
 
