@@ -322,26 +322,12 @@ function interact(player_id)
         end 
     end
     if not interacted then
-        local layer = game.map.layers['ground']
-        local tile, tileset = get_tile_and_tileset(game.pos[game.player].x, game.pos[game.player].y, layer)
-        print(tile)
-        if tile ~= nil then
-            local props = tileset.properties[tile]
-            if props ~= nil then
-                for key,val in pairs(props) do
-                    local px = game.pos[game.player].x
-                    local py = game.pos[game.player].y
-                    if key == 'digable' and val == 'true' then
-                        set_tile(px, py, layer, 64)
-                    end
-                    if key == 'hoeable' and val == 'true' then
-                        set_tile(px, py, layer, 62)
-                    end
-                    if key == 'plantable' and val == 'true' then
-                        set_tile(px, py, layer, 63)
-                        add_interactable(math.floor(px),math.floor(py),'sunflower')
-                    end
-                end
+        local active_slot = 1
+        local inv = game.players[player_id].inventory[active_slot]
+        if inv ~= nil then
+            local interactable = game.interactables[inv]
+            if interactable.functions.use ~= nil then
+                interactable.functions.use(player_id)
             end
         end
     end
@@ -527,7 +513,7 @@ function game:draw()
                 local to_draw = {}
     --draw sprites
                 for id,sprite in pairs(game.sprites) do
-        if game.alive[id] == true and sprite.active then
+                    if game.alive[id] == true and sprite.active then
                         if math.floor(game.pos[id].x) == x and math.floor(game.pos[id].y) == y then
                             table.insert(to_draw,id)
                         end

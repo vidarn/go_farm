@@ -56,16 +56,44 @@ return {
                     game.sprites[id].active = false
                     game.interactables[id].active = false
                     
-                    -- make inventory item          --NOTE(What to do here??)
-                    local item_id = new_entity()
-                    game.inventory[item_id] = id --use this stored id to get the original item
-                    
                     -- add to player slot
-                    game.players[player_id].inventory[inventory_id] = item_id
+                    game.players[player_id].inventory[inventory_id] = id
             else 
-                print("NO SLOTS FREEEE")
+                print("NO SLOTS FREEEEEEEEEE")
             end
-        end
+        end,
+
+        use = function(player_id)
+            print("USE SHOVEL!")
+
+            local layer = game.map.layers['ground']
+            local tile, tileset = get_tile_and_tileset(game.pos[player_id].x, game.pos[player_id].y, layer)
+            print(tile)
+            if tile ~= nil then
+                local props = tileset.properties[tile]
+                if props ~= nil then
+                    for key,val in pairs(props) do
+                        local px = game.pos[player_id].x
+                        local py = game.pos[player_id].y
+                        if key == 'digable' and val == 'true' then
+                            set_tile(px, py, layer, 64)
+                        end
+                        if key == 'hoeable' and val == 'true' then
+                            set_tile(px, py, layer, 62)
+                        end
+                        if key == 'plantable' and val == 'true' then
+                            set_tile(px, py, layer, 63)
+                            add_interactable(math.floor(px),math.floor(py),'sunflower')
+                        end
+                    end
+                end
+            end
+        end,
+
+        drop = function(player_id)
+            print("DROP SHOVEL!")
+        end,
+
     },
 
     plant = {}
