@@ -9,12 +9,21 @@ function set_sprite(id,name,frames_x,frames_y,speed,direction,tile_w, tile_h, of
     game.direction[id] = direction
 end
 
+function add_camera(player_id)
+    game.cameras[player_id] = {
+        x = 0.0, y=0.0,
+        shake_amplitude = 0.0, shake_frequency = 0.0,
+        offset_x = 0.0, offset_y = 0.0,
+        last_chunk_x = 0, last_chunk_y = 0
+    }
+end
 
-function add_player()
+
+function add_player(x,y)
     --NOTE will probably have to add some other type of table to link players with controllers.
     local id = new_entity()
-    local x = 8
-    local y = 8
+    --local x = 8
+    --local y = 8
     local w = 0.5
     local h = 0.5
     local center_x = 0.5
@@ -29,6 +38,8 @@ function add_player()
 
     game.player_count = game.player_count + 1
     game.player_ids[game.player_count] = id
+
+    game.chunks_to_draw[id] = {}
 
     -- SET UP DEFAULT PLAYER!
     game.players[id] = {

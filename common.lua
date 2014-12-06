@@ -60,9 +60,8 @@ function to_canvas_coord(x,y)
     return ret_x,ret_y
 end
 
-function get_current_chunk()
-    --local player_tile_x, player_tile_y = to_tile_coord(game.pos[game.player].x, game.pos[game.player].y)
-    local player_tile_x, player_tile_y = game.pos[game.player].x, game.pos[game.player].y
+function get_current_chunk(player_id)
+    local player_tile_x, player_tile_y = game.pos[player_id].x, game.pos[player_id].y
     local x = math.floor((player_tile_x-1)/game.chunksize)
     local y = math.floor((player_tile_y-1)/game.chunksize)
     return x,y
