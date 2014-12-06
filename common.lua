@@ -7,6 +7,15 @@ function get_current_inv_id(player_id)
     return game.players[player_id].inventory[active_slot]
 end
 
+function next_inventory_item(player_id)
+    local player = game.players[player_id]
+    if player.active_inventory_slot < player.inventory_slots then
+        player.active_inventory_slot = player.active_inventory_slot + 1
+    else
+        player.active_inventory_slot = 1
+    end
+end
+
 function get_tile_and_tileset(x,y,layer)
     x = math.floor(x)
     y = math.floor(y)

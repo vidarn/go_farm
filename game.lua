@@ -133,6 +133,9 @@ function game:keyreleased(key, code)
                 end
             end
         end
+    if key == 'tab' then
+        next_inventory_item(player_id)
+    end
     end
 end
 
@@ -373,8 +376,46 @@ function game:draw()
         end
     end
 
-    -- Draw scaled canvas to screen
     love.graphics.pop()
+
+    --hud stuff
+    for player_number = 1, 2, 1 do 
+        if game.player_ids[player_number] ~= nil then
+            local player = game.players[game.player_ids[player_number]]
+
+            -- draw frames
+            love.graphics.setColor(150,150,150)
+            local framesize = 32
+            local margin = 40
+            for frame = 1, player.inventory_slots, 1 do 
+                local x = g_screenres.w-margin - framesize*(frame-1)
+                local y = g_screenres.h-margin
+                love.graphics.rectangle("fill",x,y,framesize,framesize)
+            end
+
+            -- draw items
+            for key,item_id in pairs(player.inventory) do
+                local sprite = game.sprites[item_id]
+                if sprite ~= nil and item_id ~= nil and key ~= nil then
+                    local x = g_screenres.w-margin - framesize*(key-1)
+                    local y = g_screenres.h-margin
+                    sprite.anim:draw(sprite.sprite,x,y-8)
+                end
+            end
+            
+            -- highlight active slot
+            love.graphics.setColor(255,255,255)
+            local x = g_screenres.w-margin - framesize*(player.active_inventory_slot-1)
+            local y = g_screenres.h-margin
+            love.graphics.rectangle("line",x,y,framesize,framesize)
+
+
+        end
+    end
+
+
+
+    -- Draw scaled canvas to screen
     love.graphics.setBackgroundColor(0,0,0,0)
     love.graphics.setColor(255,255,255)
     love.graphics.setCanvas()
@@ -391,5 +432,6 @@ function game:draw()
         local quad = love.graphics.newQuad(0,0,w,w*aspect,w,w*aspect)
         love.graphics.draw(game.canvas, quad, 0, (h-w*aspect)*0.5)
     end
+    -- draw inventory HUD
 end
 

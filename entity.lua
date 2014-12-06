@@ -43,12 +43,10 @@ function add_player(x,y)
 
     -- SET UP DEFAULT PLAYER!
     game.players[id] = {
-        inventory_slots = 1,
+        inventory_slots = 2,
         active_inventory_slot = 1,
         inventory = {}
     }
-
-
 
     game.pos[id] = {x=x,y=y,vx=0,vy=0}
     game.world:add(id, game.pos[id].x,game.pos[id].y, w, h)
