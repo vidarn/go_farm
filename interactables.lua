@@ -9,6 +9,9 @@ return {
             print("ball interact!" .. id)
             set_sprite(id,"objects.png",2,1,0.2,1,32,32,-16,-24)
         end
+    },
+
+    plant = {
     }
 
 }

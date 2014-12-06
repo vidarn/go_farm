@@ -32,7 +32,7 @@ game.components = {
     "dynamic",
     "coins",
     "tiles",
-    "flowers",
+    "plants",
     "interactables"
 }
 
@@ -66,6 +66,33 @@ function handle_collision(id, other, cols)
             kill_entity(other)
         end
     end
+end
+
+function get_tile_and_tileset(x,y,layer)
+    x = math.floor(x)
+    y = math.floor(y)
+    local tile = layer.data[x+(y-1)*layer.width]
+    if tile ~= nil then
+        tile = tile - 1
+        local tileset = nil
+        for _,ts in pairs(game.map.tilesets) do
+            if(tile < ts.lastgid) then
+                tileset = ts
+                break
+            end
+        end
+        if(tileset ~= nil) then
+            return tile,tileset
+        end
+    else
+        return nil, nil
+    end
+end
+
+function set_tile(x,y,layer,tile)
+    x = math.floor(x)
+    y = math.floor(y)
+    layer.data[x+(y-1)*layer.width] = tile+1
 end
 
 function prerun_physics(steps)
@@ -182,21 +209,6 @@ function add_player()
     return id
 end
 
-function add_flower(x,y)
-    local id = new_entity()
-    local center_x = 0.5
-    local center_y = 1.0
-    local tile_w = 16
-    local tile_h = 16
-    local offset_x = (tile_w)*center_x
-    local offset_y = (tile_h)*center_y
-    set_sprite(id,"puhzil_0.png",2,7,0.2,1,tile_w,tile_h,offset_x,offset_y)
-    game.coins[id] = true
-
-    game.pos[id] = {x=x,y=y,vx=0,vy=0}
-    return id
-end
-
 
 function add_coin(x,y)
     local id = new_entity()
@@ -255,7 +267,7 @@ function game:keyreleased(key, code)
         debug.debug()
     end
     if key == 'e' then
-      interact() -- NOTE(Peter) Maybe this should belong in player. Putting it here to avoid calling interact multiple times.
+        interact() -- NOTE(Peter) Maybe this should belong in player. Putting it here to avoid calling interact multiple times.
     end
 end
 
@@ -271,6 +283,7 @@ end
 
 function interact()
     local use_range= math.pow(1.0,2)
+    local interacted = false
     for id, interactable in pairs(game.interactables) do
         --check that object is close
         local dx = game.pos[id].x-game.pos[game.player].x
@@ -281,7 +294,24 @@ function interact()
 
             -- run function for interactable
             interactable.interact(id)
+            interacted = true
         end 
+    end
+    if not interacted then
+        local layer = game.map.layers['ground']
+        local tile, tileset = get_tile_and_tileset(game.pos[game.player].x, game.pos[game.player].y, layer)
+        print(tile)
+        if tile ~= nil then
+            local props = tileset.properties[tile]
+            if props ~= nil then
+                for key,val in pairs(props) do
+                    print(key.."  "..val)
+                    if key == 'digable' and val == 'true' then
+                        set_tile(game.pos[game.player].x, game.pos[game.player].y, layer, 64)
+                    end
+                end
+            end
+        end
     end
 end
 
@@ -427,33 +457,23 @@ function game:draw()
 
     love.graphics.setColor(255,255,255)
     -- draw map
-    for _,layer in pairs(game.map.layers) do
-        if layer.name ~= "game" and layer.visible ~= false then
-            local chunk_x, chunk_y = get_current_chunk()
-            for x = chunk_x*game.chunksize+1, (chunk_x+1)*game.chunksize do
-                for y = chunk_y*game.chunksize+1, (chunk_y+1)*game.chunksize do
-                    if x >= 1 and x < game.map.width and y >=1 and y < game.map.height then
-                        local tile = layer.data[x+(y-1)*layer.width]
+    local chunk_x, chunk_y = get_current_chunk()
+    for x = chunk_x*game.chunksize+1, (chunk_x+1)*game.chunksize do
+        for y = chunk_y*game.chunksize+1, (chunk_y+1)*game.chunksize do
+            if x >= 1 and x < game.map.width and y >=1 and y < game.map.height then
+                for _,layer in pairs(game.map.layers) do
+                    if layer.visible ~= false then
+                        local tile,tileset = get_tile_and_tileset(x,y,layer)
                         if tile ~= nil then
-                            tile = tile - 1
-                            local tileset = nil
-                            for _,ts in pairs(game.map.tilesets) do
-                                if(tile < ts.lastgid) then
-                                    tileset = ts
-                                    break
-                                end
-                            end
-                            if(tileset ~= nil) then
-                                local localgid = tile + 1 - tileset.firstgid
-                                local tx = localgid % tileset.tiles_x
-                                local ty = math.floor(localgid / tileset.tiles_x)
-                                local tw = tileset.tilewidth
-                                local th = tileset.tileheight
-                                local quad = love.graphics.newQuad(tx*tw, ty*th,tw,th,tileset.imagewidth, tileset.imageheight)
-                                local draw_x = (x-y-1)*game.map.tilewidth*0.5
-                                local draw_y = (x+y-1)*game.map.tileheight*0.5
-                                love.graphics.draw(tileset.loaded_image, quad, draw_x, draw_y)
-                            end
+                            local localgid = tile + 1 - tileset.firstgid
+                            local tx = localgid % tileset.tiles_x
+                            local ty = math.floor(localgid / tileset.tiles_x)
+                            local tw = tileset.tilewidth
+                            local th = tileset.tileheight
+                            local quad = love.graphics.newQuad(tx*tw, ty*th,tw,th,tileset.imagewidth, tileset.imageheight)
+                            local draw_x = (x-y-1)*game.map.tilewidth*0.5
+                            local draw_y = (x+y-1)*game.map.tileheight*0.5
+                            love.graphics.draw(tileset.loaded_image, quad, draw_x, draw_y)
                         end
                     end
                 end
@@ -472,8 +492,8 @@ function game:draw()
             y = math.floor(y)
             sprite.anim:draw(sprite.sprite,x+sprite.offset_x,y+sprite.offset_y)
             --for debugging, draw center
-            local cx, cy = to_canvas_coord(game.pos[id].x, game.pos[id].y)
-            love.graphics.rectangle("fill", cx, cy, 2,2)
+            --local cx, cy = to_canvas_coord(game.pos[id].x, game.pos[id].y)
+            --love.graphics.rectangle("fill", cx, cy, 2,2)
         end
     end
 
