@@ -2,7 +2,7 @@
 <map version="1.0" orientation="isometric" renderorder="right-down" width="40" height="40" tilewidth="32" tileheight="16">
  <tileset firstgid="1" name="block" tilewidth="32" tileheight="32">
   <tileoffset x="0" y="16"/>
-  <image source="../../../ludum_warmup/data/tiles/block.png" width="1920" height="1147"/>
+  <image source="../tiles/block.png" width="1920" height="1147"/>
   <tile id="64">
    <properties>
     <property name="collision" value="true"/>
@@ -11,7 +11,7 @@
  </tileset>
  <layer name="Tile Layer 1" width="40" height="40">
   <data encoding="base64" compression="zlib">
-   eJzt1EsKgDAMRdFsrIj735QOLAZppLT5vMEbXBCEckyoTUTOu/aknzM7jLrJCsU3epdpXfFZXlRfNyL49F7RfHqPWXdmZX7fMyp9s/+YCt9fI1+Eccdn7RrBZ1m85+jt8zZG+DyNO74ZI7Kver8Z0Ucfog/FSB999NFHH330YfkQnJ6+mbMi8v7eKh/6/Oh7uwAsuoGG
+   eJzt2E0KgCAQBWAvJtH9L1WLIpEZdWz+Fm/xQCLo4426qJZSzjv1Sbv2zMHkNfXJ5uufUfZo3+x9S6fUNzJGzpeabTZfG6+zs+ujrBE+6tvcM2pt6Zt15tGh1Nd3a9mdxMedEeu9KOmPume42WsZLXyaxt3zsbLfsvu85xsR+ODL6MtihA8++OCDDz4tH/ffBT6ZL8OcNX2jvayZP/1l9nn1t3vPwPflAkm+gWY=
   </data>
  </layer>
  <layer name="game" width="40" height="40">

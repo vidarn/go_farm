@@ -30,6 +30,7 @@ game.components = {
     "dynamic",
     "coins",
     "tiles",
+    "flowers",
 }
 
 function create_component_managers()
@@ -177,6 +178,22 @@ function add_player()
     return id
 end
 
+function add_flower(x,y)
+    local id = new_entity()
+    local center_x = 0.5
+    local center_y = 1.0
+    local tile_w = 16
+    local tile_h = 16
+    local offset_x = (tile_w)*center_x
+    local offset_y = (tile_h)*center_y
+    set_sprite(id,"puhzil_0.png",2,7,0.2,1,tile_w,tile_h,offset_x,offset_y)
+    game.coins[id] = true
+
+    game.pos[id] = {x=x,y=y,vx=0,vy=0}
+    return id
+end
+
+
 function add_coin(x,y)
     local id = new_entity()
     local w = 16
@@ -258,7 +275,7 @@ function update_player(dt,id)
 end
 
 function update_physics(dt,id)
-    local max_speed = 0.3
+    local max_speed = 0.4
     -- Update physics
     local sx = sign(game.pos[id].vx)
     local sy = sign(game.pos[id].vy)
@@ -363,7 +380,7 @@ end
 function game:draw()
     love.graphics.setCanvas(game.canvas)
 
-    love.graphics.setBackgroundColor(89,125,206)
+    love.graphics.setBackgroundColor(99,155,255)
     love.graphics.clear()
 
     love.graphics.push()
