@@ -9,14 +9,29 @@
    </properties>
   </tile>
  </tileset>
+ <tileset firstgid="2101" name="objects" tilewidth="32" tileheight="32">
+  <image source="../tiles/objects.png" width="57" height="32"/>
+  <tile id="0">
+   <properties>
+    <property name="collision" value="true"/>
+    <property name="interactable_type" value="ball"/>
+    <property name="spawn" value="interactable"/>
+   </properties>
+  </tile>
+ </tileset>
  <layer name="Tile Layer 1" width="40" height="40">
   <data encoding="base64" compression="zlib">
-   eJzt2E0KgCAQBWAvJtH9L1WLIpEZdWz+Fm/xQCLo4426qJZSzjv1Sbv2zMHkNfXJ5uufUfZo3+x9S6fUNzJGzpeabTZfG6+zs+ujrBE+6tvcM2pt6Zt15tGh1Nd3a9mdxMedEeu9KOmPume42WsZLXyaxt3zsbLfsvu85xsR+ODL6MtihA8++OCDDz4tH/ffBT6ZL8OcNX2jvayZP/1l9nn1t3vPwPflAkm+gWY=
+   eJzt1EsKgDAMRdFsrEj3vykdWCylkdLm8wZvcFEQyjFBi4jUp/LW30d2KTWTFopv9izSuuPTvKi+ZkTw1eGK5Ov3GPXN7MxvPCPTt/qPyfD9NfN5GE982q4RfJrFeo7WPmujh8/SeOJbMSL7svcbEX30IfpQjPTRRx999NFHH5YPwWnpWznLI+v3zfKhz4++rxsBMoGE
   </data>
  </layer>
  <layer name="game" width="40" height="40">
   <data encoding="base64" compression="zlib">
    eJztzjENAAAIA7BZw78pJCxcPK2CJgAAAAAAADfzHSgWQaAAQg==
+  </data>
+ </layer>
+ <layer name="objects" width="40" height="40">
+  <data encoding="base64" compression="zlib">
+   eJzt0TENAAAIwDBODOHfGjc/CQetgiWL4KvK6wK2eAkAAAAAMDWj0gB7
   </data>
  </layer>
 </map>
