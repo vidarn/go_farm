@@ -8,9 +8,14 @@
     <property name="digable" value="true"/>
    </properties>
   </tile>
+  <tile id="62">
+   <properties>
+    <property name="plantable" value="true"/>
+   </properties>
+  </tile>
   <tile id="64">
    <properties>
-    <property name="collision" value="true"/>
+    <property name="hoeable" value="true"/>
    </properties>
   </tile>
  </tileset>
@@ -32,12 +37,12 @@
  </tileset>
  <layer name="ground" width="40" height="40">
   <data encoding="base64" compression="zlib">
-   eJzt1FEKwCAMA9BerIze/1L7HIzJ7LRLxHwEPyzyjKCbmRPkaATt6vWh7V98f3pHfW61xqwvbiuTL15m0T5/2Ef315qp7CzrQybjQ/yNIz62/tjfdzVfkPvY+5NPvl19LEb55JNPPvnkk4/Lx+Cc6es5qyKz74vysfcn35UTDCqAwg==
+   eJzt1DEOABAQRNG9mIj7X0qpEgp2x/rFb+UZiWJmRaA6KdqFz9fXxH3q+73k83zrjPvhw4dvncc/k3k/fPh+9akY8eHDhw8fPnxaPgXnSd/OWTc6fd8on/p++EYdCCSASg==
   </data>
  </layer>
  <layer name="objects" width="40" height="40">
   <data encoding="base64" compression="zlib">
-   eJzt1LEJAEAIBEFDG3r7L80CTB8MnKlg4eAiuOrldgG/2BJgKt8IAAAApzWKzgC5
+   eJzt1MEJACAMBME8bUj7L80CfPgKRjJTwcLBRdDVHK8LTqtg0w8qbnljayCbnwEAAIDeNvJsATU=
   </data>
  </layer>
 </map>

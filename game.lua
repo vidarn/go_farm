@@ -308,9 +308,17 @@ function interact()
             local props = tileset.properties[tile]
             if props ~= nil then
                 for key,val in pairs(props) do
-                    print(key.."  "..val)
+                    local px = game.pos[game.player].x
+                    local py = game.pos[game.player].y
                     if key == 'digable' and val == 'true' then
-                        set_tile(game.pos[game.player].x, game.pos[game.player].y, layer, 64)
+                        set_tile(px, py, layer, 64)
+                    end
+                    if key == 'hoeable' and val == 'true' then
+                        set_tile(px, py, layer, 62)
+                    end
+                    if key == 'plantable' and val == 'true' then
+                        set_tile(px, py, layer, 63)
+                        add_interactable(math.floor(px),math.floor(py),'sunflower')
                     end
                 end
             end
@@ -495,22 +503,29 @@ function game:draw()
                         draw_map_tile(x,y,layer)
                     end
                 end
+                local to_draw = {}
                 for id,sprite in pairs(game.sprites) do
                     if game.alive[id] == true then
                         if math.floor(game.pos[id].x) == x and math.floor(game.pos[id].y) == y then
-                            if game.direction[id] ~= sprite.direction then
-                                sprite.direction = game.direction[id]
-                                sprite.anim:flipH()
-                            end
-                            local x,y = to_canvas_coord(game.pos[id].x, game.pos[id].y)
-                            x = math.floor(x)
-                            y = math.floor(y)
-                            sprite.anim:draw(sprite.sprite,x+sprite.offset_x,y+sprite.offset_y)
-                            --for debugging, draw center
-                            --local cx, cy = to_canvas_coord(game.pos[id].x, game.pos[id].y)
-                            --love.graphics.rectangle("fill", cx, cy, 2,2)
+                            table.insert(to_draw,id)
                         end
                     end
+                end
+                table.sort(to_draw, function(a,b) return (game.pos[a].x+game.pos[a].y) < (game.pos[b].x+game.pos[b].y) end)
+                for i=1 , #to_draw do
+                    local id = to_draw[i]
+                    local sprite = game.sprites[id]
+                    if game.direction[id] ~= sprite.direction then
+                        sprite.direction = game.direction[id]
+                        sprite.anim:flipH()
+                    end
+                    local x,y = to_canvas_coord(game.pos[id].x, game.pos[id].y)
+                    x = math.floor(x)
+                    y = math.floor(y)
+                    sprite.anim:draw(sprite.sprite,x+sprite.offset_x,y+sprite.offset_y)
+                    --for debugging, draw center
+                    local cx, cy = to_canvas_coord(game.pos[id].x, game.pos[id].y)
+                    love.graphics.rectangle("fill", cx, cy, 2,2)
                 end
             end
         end

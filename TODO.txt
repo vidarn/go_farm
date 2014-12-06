@@ -2,9 +2,9 @@
 
 - Gå i tiles
 - Collision detection
-* Interagera med objekt         -- Evoy
+* Interagera med objekt
 * Pickup/drop
-* Växter som växer              -- Vidar
-* Uppritningsordning
+* Växter som växer
+- Uppritningsordning
 * Dag- och nattcykel
 
