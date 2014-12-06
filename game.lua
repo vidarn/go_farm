@@ -5,6 +5,7 @@ require "common"
 
 game = {}
 game.interactable_functions = require "interactables"
+game.inventory_item_functions = require "inventory_items"
 
 game.camera = {
     x = 0.0, y=0.0,
@@ -24,16 +25,22 @@ game.tile_size = {
 
 game.alive = {}
 
+
 game.components = {
     "sprites",
     "pos",
     "direction",
+    "player_ids",
     "players",
     "dynamic",
     "coins",
     "tiles",
-    "interactables"
+    "interactables",
+    "inventory",
+    "item_properties"
 }
+
+game.player_count = 0
 
 function create_component_managers()
     for _,component in pairs(game.components) do
@@ -156,11 +163,12 @@ function set_sprite(id,name,frames_x,frames_y,speed,direction,tile_w, tile_h, of
     if direction==-1 then
         anim:flipH()
     end
-    game.sprites[id] = {anim = anim, sprite = sprite, direction=direction, offset_x=offset_x, offset_y=offset_y}
+    game.sprites[id] = {anim = anim, sprite = sprite, direction=direction, offset_x=offset_x, offset_y=offset_y, active=true}
     game.direction[id] = direction
 end
 
 function add_player()
+    --NOTE will probably have to add some other type of table to link players with controllers.
     local id = new_entity()
     local x = 8
     local y = 8
@@ -175,6 +183,17 @@ function add_player()
     local offset_y = (-sprite_h)*center_y
     set_sprite(id,"human_regular_hair.png","3-5",2,0.2,1,sprite_w,sprite_h,offset_x, offset_y)
     game.dynamic[id] = true
+
+    game.player_count = game.player_count + 1
+    game.player_ids[game.player_count] = id
+
+    -- SET UP DEFAULT PLAYER!
+    game.players[id] = {
+        inventory_slots = 1,
+        inventory = {}
+    }
+
+
 
     game.pos[id] = {x=x,y=y,vx=0,vy=0}
     game.world:add(id, game.pos[id].x,game.pos[id].y, w, h)
@@ -238,21 +257,23 @@ function game:keyreleased(key, code)
         debug.debug()
     end
     if key == 'e' then
-      interact() -- NOTE(Peter) Maybe this should belong in player. Putting it here to avoid calling interact multiple times.
+      interact(game.player_ids[1]) --keyboard is treated as player one
     end
 end
 
 function add_interactable(x,y,interactable_type)
     local id = new_entity()
 
-    game.interactables[id] = game.interactable_functions[interactable_type]
+    game.interactables[id] = {}
+    game.interactables[id].functions = game.interactable_functions[interactable_type]
+    game.interactables[id].active = true --setting to false will make the interact command ignore this object
     game.pos[id] = {x=x,y=y,vx=0,vy=0}
 
     -- execute object specific code, which is defined in nteractables.lua
-    game.interactables[id].create(id)
+    game.interactables[id].functions.create(id)
 end
 
-function interact()
+function interact(player_id)
     local use_range= math.pow(1.0,2)
     for id, interactable in pairs(game.interactables) do
         --check that object is close
@@ -260,10 +281,10 @@ function interact()
         local dy = game.pos[id].y-game.pos[game.player].y
         local distance = math.pow(dx,2) + math.pow(dy,2)
         print("interact distance"..distance)
-        if (  distance < use_range ) then
-
+        print("id",id,"active:",interactable.active)
+        if interactable.active and (  distance < use_range ) then
             -- run function for interactable
-            interactable.interact(id)
+            interactable.functions.interact(id,player_id)
         end 
     end
 end
@@ -443,9 +464,10 @@ function game:draw()
             end
         end
     end
-
+    
+    --draw sprites
     for id,sprite in pairs(game.sprites) do
-        if game.alive[id] == true then
+        if game.alive[id] == true and sprite.active then
             if game.direction[id] ~= sprite.direction then
                 sprite.direction = game.direction[id]
                 sprite.anim:flipH()

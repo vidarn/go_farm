@@ -10,11 +10,17 @@
   </tile>
  </tileset>
  <tileset firstgid="2101" name="objects" tilewidth="32" tileheight="32">
-  <image source="../tiles/objects.png" width="57" height="32"/>
+  <image source="../tiles/objects.png" width="96" height="32"/>
   <tile id="0">
    <properties>
     <property name="collision" value="true"/>
     <property name="interactable_type" value="ball"/>
+    <property name="spawn" value="interactable"/>
+   </properties>
+  </tile>
+  <tile id="2">
+   <properties>
+    <property name="interactable_type" value="shovel_iron"/>
     <property name="spawn" value="interactable"/>
    </properties>
   </tile>
@@ -30,8 +36,12 @@
   </data>
  </layer>
  <layer name="objects" width="40" height="40">
+  <properties>
+   <property name="interactable_type" value="shovel_iron"/>
+   <property name="spawn" value="interactable"/>
+  </properties>
   <data encoding="base64" compression="zlib">
-   eJzt0TENAAAIwDBODOHfGjc/CQetgiWL4KvK6wK2eAkAAAAAMDWj0gB7
+   eJzt0bEJACAMRNGULiTuv5lVCnshhLw3wecugqn2qi7gl+5fnub9lXI7GwIAAADA6wIjswE4
   </data>
  </layer>
 </map>
