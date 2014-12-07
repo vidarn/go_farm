@@ -73,6 +73,9 @@ function load_resource(name,resource_type)
         if resource_type == "font" then
             resource = love.graphics.newImage("data/fonts/"..filename)
         end
+        if resource_type == "sfx" then
+            resource = love.audio.newSource("data/sfx/"..filename)
+        end
         if resource_type == "map" then
             resource = load_map("data/levels/"..filename)
         end

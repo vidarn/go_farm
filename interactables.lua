@@ -16,6 +16,7 @@ function drop_item(player_id)
 
     --remove from inventory
     player.inventory[player.active_inventory_slot] = nil
+    play_sound("drop")
 end
 
 function pickup_item(id,player_id)
@@ -27,8 +28,10 @@ function pickup_item(id,player_id)
             game.interactables[id].active = false
             -- add to player slot
             game.players[player_id].inventory[inventory_id] = id
+            play_sound("pickup")
             return true
     else 
+        play_sound("fail")
         return false
     end
 end
@@ -99,6 +102,8 @@ function add_harvest_to_inventory(player_id, harvest_type_string)
             game.sprites[item_id].active = false
 
             slot_found = true
+        else
+            play_sound("fail")
         end
     end
 
@@ -107,8 +112,10 @@ function add_harvest_to_inventory(player_id, harvest_type_string)
         --add to inventory
         game.players[player_id].inventory[inventory_id] = item_id
         --delete world entity
+        play_sound("harvest")
         return true
     else
+        play_sound("fail")
         print("NO SLOT FOUND FOR HARVEST!")
         return false
     end
@@ -200,8 +207,6 @@ return {
             }
 
             set_sprite(id,"objects.png",1,3,0.2,1,32,32,-16,-24)
-
-            print("Sunflower seed CREATE")
         end,
 
         check_interact = function(id,player_id)
@@ -239,6 +244,9 @@ return {
 
             if planted then
                 consume_inventory_item(player_id)
+                play_sound("plant")
+            else
+                play_sound("fail")
             end
         end,
     },
@@ -276,13 +284,16 @@ return {
                         local py = game.pos[player_id].y
                         if key == 'digable' and val == 'true' then
                             set_tile(px, py, layer, 64)
+                            play_sound("dig")
                         end
                         if key == 'hoeable' and val == 'true' then
                             set_tile(px, py, layer, 62)
+                            play_sound("dig")
                         end
                         if key == 'plantable' and val == 'true' then
                             set_tile(px, py, layer, 63)
                             add_interactable(math.floor(px),math.floor(py),'sunflower')
+                            play_sound("plant")
                         end
                     end
                 end
@@ -320,6 +331,7 @@ return {
             local layer = game.map.layers['ground']
             local tile, tileset = get_tile_and_tileset(game.pos[player_id].x, game.pos[player_id].y, layer)
             print(tile)
+            local success = false
             if tile ~= nil then
                 local props = tileset.properties[tile]
                 if props ~= nil then
@@ -328,9 +340,15 @@ return {
                         local py = game.pos[player_id].y
                         if key == 'digable' and val == 'true' then
                             set_tile(px, py, layer, 64)
+                            success = true
                         end
                     end
                 end
+            end
+            if success == true then
+                play_sound("dig")
+            else
+                play_sound("fail")
             end
         end,
 
@@ -363,6 +381,7 @@ return {
             local layer = game.map.layers['ground']
             local tile, tileset = get_tile_and_tileset(game.pos[player_id].x, game.pos[player_id].y, layer)
             print(tile)
+            local success = false
             if tile ~= nil then
                 local props = tileset.properties[tile]
                 if props ~= nil then
@@ -371,9 +390,15 @@ return {
                         local py = game.pos[player_id].y
                         if key == 'hoeable' and val == 'true' then
                             set_tile(px, py, layer, 62)
+                            success = true
                         end
                     end
                 end
+            end
+            if success == true then
+                play_sound("dig")
+            else
+                play_sound("fail")
             end
         end,
 
@@ -394,13 +419,16 @@ return {
         
         interact = function(id,player_id)
             set_sprite(id,"vending_machine.png","2-4",1,0.2,1,32,64,-16,-64+8)
+            play_sound("shop")
             local gui = {
                 update = function(dt,player_id)
                 end,
                 keyreleased = function(key,player_id)
+                    local action = false
                     if key == game.keys[player_id].down then
                         game.players[player_id].gui = nil
                         set_sprite(id,"vending_machine.png",1,1,0.2,1,32,64,-16,-64+8)
+                        action = true
                     end
                     if key == game.keys[player_id].up then
                         local gui = game.players[player_id].gui
@@ -408,6 +436,9 @@ return {
                         if game.money >= active_item.price then
                             add_interactable(game.pos[id].x+1.5,game.pos[id].y,gui.inventory[gui.active_slot].name)
                             game.money = game.money - active_item.price
+                            play_sound("buy")
+                        else
+                            play_sound("fail")
                         end
                     end
                     if key == game.keys[player_id].left then
@@ -416,6 +447,7 @@ return {
                         if gui.active_slot < 1 then
                             gui.active_slot = #gui.inventory
                         end
+                        action = true
                     end
                     if key == game.keys[player_id].right then
                         local gui = game.players[player_id].gui
@@ -423,6 +455,10 @@ return {
                         if gui.active_slot > #gui.inventory then
                             gui.active_slot = 1
                         end
+                        action = true
+                    end
+                    if action then
+                        play_sound("blip")
                     end
                 end,
                 draw = function(player_id)
@@ -480,13 +516,20 @@ return {
             --set_sprite(id,"vending_machine.png","2-4",1,0.2,1,32,64,-16,-64+8)
             local player = game.players[player_id]
             local inv = player.inventory[player.active_inventory_slot]
+            local success = false
             if inv ~= nil then
                 local item_prop = game.item_properties[inv]
                 if item_prop ~= nil and item_prop.price ~= nil then
                     game.money = game.money + item_prop.price*item_prop.amount
                     player.inventory[player.active_inventory_slot] = nil
                     kill_entity(inv)
+                    success = true
                 end
+            end
+            if success == true then
+                play_sound("coin")
+            else
+                play_sound("fail")
             end
         end
     },
@@ -524,6 +567,7 @@ return {
                             print("tile is pathable!")
                             set_tile(px, py, layer, 181)
                             consume_inventory_item(player_id)
+                            play_sound("dig")
                         end
                     end
                 end
