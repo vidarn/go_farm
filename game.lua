@@ -19,8 +19,6 @@ game.debug = false
 game.player_ids = {}
 
 
-game.shake_time = 0.0
-
 game.tile_size = {
     w=32,h=16,
 }
@@ -272,10 +270,6 @@ function game:update(dt)
             camera.last_chunk_x = player_chunk_x
             camera.last_chunk_y = player_chunk_y
 
-            -- Camera shake
-            camera.x = camera.x + camera.shake_amplitude*love.math.noise(12345.2 + game.shake_time*camera.shake_frequency)
-            camera.y = camera.y + camera.shake_amplitude*love.math.noise(31.5232 + game.shake_time*camera.shake_frequency)
-            game.shake_time = (game.shake_time + dt)%1.0
         end
         camera.last_num_active_chunks = num_active_chunks
         -- update chunks
@@ -291,6 +285,7 @@ function game:update(dt)
             end
             chunk.active = false
         end
+        camera.shake_time = (camera.shake_time + dt*camera.shake_frequency)%1.0
     end
 end
 
@@ -319,12 +314,15 @@ function game:draw()
 
     love.graphics.push()
     local bkg_parallax = 0.4
-    for _,player_id in pairs(game.player_ids) do
+    for a,player_id in pairs(game.player_ids) do
         local camera = game.cameras[player_id]
 
         love.graphics.pop()
         love.graphics.push()
-        love.graphics.translate(math.floor(-camera.x + g_screenres.w*0.5), math.floor(-camera.y + g_screenres.h*0.5))
+        -- Camera shake
+        --camera.x = camera.x + camera.shake_amplitude*love.math.noise(12345.2 + game.shake_time*camera.shake_frequency)
+        local offset_y = camera.shake_amplitude*math.sin(camera.shake_time*2*math.pi + 1234.322*a)
+        love.graphics.translate(math.floor(-camera.x + g_screenres.w*0.5), math.floor(-camera.y + g_screenres.h*0.5 + offset_y))
 
         love.graphics.setColor(255,255,255)
         for chunk_x = 0, game.num_chunks.w do
