@@ -65,7 +65,7 @@ function interact(player_id)
         local inv = game.players[player_id].inventory[game.players[player_id].active_inventory_slot]
         if inv ~= nil then
             local interactable = game.interactables[inv]
-            if interactable.functions.use ~= nil then
+            if interactable.functions ~= nil and interactable.functions.use ~= nil then
                 interactable.functions.use(player_id)
             end
         end
@@ -96,21 +96,26 @@ function update_player(dt,id)
 end
 
 function update_plants(dt)
+    --growth is set so that
+    -- diffrent growing stages between 0 and 1
+    -- at 1 the plant is fully grown.
+    -- at 2 it is decomposing
     for id,plant in pairs(game.plants) do
         if plant.species == 'sunflower' then
-            plant.growth = plant.growth + dt
-            if plant.growth > 3.0 and plant.state < 1 then
+            local growth_rate = 0.5 --percent per second
+            if plant.growth > 0.3 and plant.state < 0.7 then
                 set_sprite(id,"plants.png",2,1,0.8,1,32,64,-16,-64+8)
                 plant.state = 1
             end
-            if plant.growth > 7.0 and plant.state < 2 then
+            if plant.growth > 0.7 and plant.state < 1.0 then
                 set_sprite(id,"plants.png",3,1,0.8,1,32,64,-16,-64+8)
                 plant.state = 2
             end
-            if plant.growth > 12.0 and plant.state < 3 then
+            if plant.growth > 1.0 and plant.state < 2 then
                 set_sprite(id,"plants.png",4,1,0.8,1,32,64,-16,-64+8)
                 plant.state = 3
             end
+            plant.growth = plant.growth + dt*growth_rate
         end
     end
 end

@@ -18,6 +18,96 @@ function drop_item(player_id)
     player.inventory[player.active_inventory_slot] = nil
 end
 
+function get_free_slot(player_id)
+    local free_slot_found = false
+    local inventory_id = 1
+    while (not free_slot_found and inventory_id <= game.players[player_id].inventory_slots) do
+        if game.players[player_id].inventory[inventory_id] == nil then
+            free_slot_found = true
+        else
+            inventory_id = inventory_id + 1 
+        end
+    end
+
+    if free_slot_found then
+        return inventory_id
+    else
+        return false
+    end
+end
+
+function add_harvest_to_inventory(player_id, harvest_type_string)
+    local harvest_type = game.harvest_types[harvest_type_string]
+
+    local slot_found = false
+    local item_id = nil
+    local inventory_id = 1
+    -- look for existing inventory item
+    while (not slot_found and inventory_id <= game.players[player_id].inventory_slots) do
+        print("checking for matching slot", inventory_id)
+        item_id = game.players[player_id].inventory[inventory_id]
+        local item_prop = game.item_properties[item_id]
+
+        if item_prop and
+            item_prop.harvest_type == harvest_type and
+            item_prop.amount < item_prop.max_amount then
+            --We have found a matching harvest item in the players inventory with room!
+
+            slot_found = true
+
+            -- increase amount!
+            if item_prop.amount ~=nil then
+                item_prop.amount = item_prop.amount + 1
+            end
+        else
+            inventory_id = inventory_id + 1 
+        end
+    end
+
+    -- If there is space, create a new one
+    if slot_found == false then
+        print("No MATCHING HARVEST SLOT FOUND")
+        --find empty slot
+        inventory_id = get_free_slot(player_id)
+        print(inventory_id)
+        if inventory_id then
+            print("Empty slot FOUND")
+            --create harvest item
+            item_id = new_entity()
+            game.item_properties[item_id] = {
+                harvest_type = harvest_type,
+                amount = 1,
+                max_amount = harvest_type.max_amount --we might want to have diffrent amounts for diffrent crops
+            }
+            harvest_type.set_sprite(item_id) --set sprite to use in inventory.
+            game.sprites[item_id].active = false
+
+            slot_found = true
+        end
+    end
+
+    if slot_found == true then
+        print("SLOT found adding to inventory and removing entity!")
+        --add to inventory
+        game.players[player_id].inventory[inventory_id] = item_id
+        --delete world entity
+        return true
+    else
+        print("NO SLOT FOUND FOR HARVEST!")
+        return false
+    end
+
+end
+
+game.harvest_types = {
+    sunflower_harvest = {
+        set_sprite = function(id)
+            set_sprite(id,"objects.png",2,3,0.2,1,32,32,-16,-24)
+        end,
+        max_amount = 10
+    },
+}
+
 return {
     ball = {
         create = function(id,player_id)
@@ -42,6 +132,21 @@ return {
             set_sprite(id,"plants.png",1,1,0.8,1,32,64,-16,-64+8)
             game.plants[id] = {species="sunflower", growth=0.0, state=0}
         end,
+
+        interact = function(id,player_id)
+            -- check if self is ready to be harvested.
+            print("SUNFLOWER INTERACT!")
+            local player = game.players[player_id]
+            local plant = game.plants[id]
+            if plant.growth > 1 then
+            print("SUNFLOWER HARVEST!")
+                if add_harvest_to_inventory(player_id,"sunflower_harvest") then
+                    -- set tile to be hole
+                    kill_entity(id)
+                end
+                return true
+            end
+        end,
     },
 
     sunflower_seed = {
@@ -59,17 +164,8 @@ return {
             --check if player has room in inventory
             local player = game.players[player_id]
 
-            local free_slot_found = false
-            local inventory_id = 1
-            while (not free_slot_found and inventory_id <= player.inventory_slots) do
-                if player.inventory[inventory_id] == nil then
-                    free_slot_found = true
-                else
-                    inventory_id = inventory_id + 1 
-                end
-            end
-
-            if free_slot_found then
+            local inventory_id = get_free_slot(player_id) 
+            if inventory_id then
                     -- set the interactable world object to be unactive
                     game.sprites[id].active = false
                     game.interactables[id].active = false
@@ -77,7 +173,7 @@ return {
                     -- add to player slot
                     game.players[player_id].inventory[inventory_id] = id
             else 
-                print("INGA SLOTS LEDIGA, sorry grabbar!")
+                print("NO SLOTS FREE!")
             end
             return true
         end,
