@@ -92,7 +92,8 @@ function add_harvest_to_inventory(player_id, harvest_type_string)
             game.item_properties[item_id] = {
                 harvest_type = harvest_type,
                 amount = 1,
-                max_amount = harvest_type.max_amount --we might want to have diffrent amounts for diffrent crops
+                max_amount = harvest_type.max_amount, --we might want to have diffrent amounts for diffrent crops
+                price = harvest_type.price,
             }
             harvest_type.set_sprite(item_id) --set sprite to use in inventory.
             game.sprites[item_id].active = false
@@ -133,7 +134,8 @@ game.harvest_types = {
         set_sprite = function(id)
             set_sprite(id,"objects.png",2,3,0.2,1,32,32,-16,-24)
         end,
-        max_amount = 10
+        max_amount = 10,
+        price = 10,
     },
 }
 
@@ -452,7 +454,6 @@ return {
                         name = "hoe_iron",
                     })
             game.players[player_id].gui = gui
-            return true
         end
     },
 
@@ -467,7 +468,18 @@ return {
         
         interact = function(id,player_id)
             --set_sprite(id,"vending_machine.png","2-4",1,0.2,1,32,64,-16,-64+8)
-            return true
+            local player = game.players[player_id]
+            local inv = player.inventory[player.active_inventory_slot]
+            print('aaa')
+            if inv ~= nil then
+                print('bbb')
+                local item_prop = game.item_properties[inv]
+                if item_prop ~= nil and item_prop.price ~= nil then
+                    print('ddd')
+                    player.inventory[player.active_inventory_slot] = nil
+                    kill_entity(inv)
+                end
+            end
         end
     },
 
