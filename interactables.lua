@@ -139,7 +139,14 @@ end
 game.harvest_types = {
     sunflower_harvest = {
         set_sprite = function(id)
-            set_sprite(id,"objects.png",2,3,0.2,1,32,32,-16,-24)
+            set_sprite(id,"objects.png",1,4,0.2,1,32,32,-16,-24)
+        end,
+        max_amount = 10,
+        price = 10,
+    },
+    berry_bush_harvest = {
+        set_sprite = function(id)
+            set_sprite(id,"objects.png",2,4,0.2,1,32,32,-16,-24)
         end,
         max_amount = 10,
         price = 10,
@@ -236,6 +243,88 @@ return {
                         if key == 'plantable' and val == 'true' then
                             set_tile(px, py, layer, 63)
                             add_interactable(math.floor(px),math.floor(py),'sunflower')
+                            planted = true
+                        end
+                    end
+                end
+            end
+
+            if planted then
+                consume_inventory_item(player_id)
+                play_sound("plant")
+            else
+                play_sound("fail")
+            end
+        end,
+    },
+
+    berry_bush = {
+        create = function(id)
+            set_sprite(id,"plants.png",1,3,0.8,1,32,32,-16,-32+8)
+            game.plants[id] = {species="berry_bush", growth=0.0, state=0}
+        end,
+
+        check_interact = function(id,player_id)
+            local plant = game.plants[id]
+            if plant.growth > 1 then
+                return true
+            end
+        end,
+
+        interact = function(id,player_id)
+            -- check if self is ready to be harvested.
+            local player = game.players[player_id]
+            local plant = game.plants[id]
+            if plant.growth > 1 then
+                if add_harvest_to_inventory(player_id,"berry_bush_harvest") then
+                    local x = game.pos[id].x
+                    local y = game.pos[id].y
+                    --reset growth back to pre berry..
+                    print("resetting bush")
+                    plant.growth = 0.7
+                    plant.state = 0
+                end
+            end
+        end,
+    },
+    berry_bush_seed = {
+        create = function(id)
+            game.item_properties[id] = {
+                amount = 4
+            }
+
+            set_sprite(id,"objects.png",2,3,0.2,1,32,32,-16,-24)
+
+            print("Berry bush seed CREATE")
+        end,
+
+        check_interact = function(id,player_id)
+            return true
+        end,
+
+        interact = function(id,player_id)
+            return pickup_item(id,player_id)
+        end,
+
+        drop = function(player_id)
+            drop_item(player_id)
+        end,
+        use = function(player_id)
+            print("USE BERRYBUSH SEED!")
+
+            local layer = game.map.layers['ground']
+            local tile, tileset = get_tile_and_tileset(game.pos[player_id].x, game.pos[player_id].y, layer)
+            print(tile)
+            local planted = false
+            if tile ~= nil then
+                local props = tileset.properties[tile]
+                if props ~= nil then
+                    for key,val in pairs(props) do
+                        local px = game.pos[player_id].x
+                        local py = game.pos[player_id].y
+                        if key == 'plantable' and val == 'true' then
+                            set_tile(px, py, layer, 63)
+                            add_interactable(math.floor(px),math.floor(py),'berry_bush')
                             planted = true
                         end
                     end
@@ -543,7 +632,7 @@ return {
             game.item_properties[id] = {
                 amount = 15
             }
-            set_sprite(id,"objects.png",1,4,0.2,1,32,32,-16,-24)
+            set_sprite(id,"objects.png",1,5,0.2,1,32,32,-16,-24)
             print("Pathway CREATE")
         end,
 
@@ -568,7 +657,7 @@ return {
                         local py = game.pos[player_id].y
                         if key == 'pathable' and val == 'true' then
                             print("tile is pathable!")
-                            set_tile(px, py, layer, 181)
+                            set_tile(px, py, layer, 180)
                             consume_inventory_item(player_id)
                             play_sound("dig")
                         end

@@ -9,6 +9,11 @@ g_screenres = {
     h=math.floor(love.graphics.getHeight()/2)
 }
 
+g_music = {
+    ambience = load_resource("ambience.mp3","music"),
+    chime = load_resource("chime.mp3","music")
+}
+
 g_num_players = 1
 
 g_key_codes = {
@@ -55,6 +60,8 @@ g_keys = {
 g_font = love.graphics.newImageFont(load_resource('8pxfont.png','font'),[[!"#$%&`()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_'abcdefghijlkmnopqrstuvwxyz{|}~ ]])
 
 function love.load()
+    love.audio.play(g_music.ambience)
+    love.audio.play(g_music.chime)
     love.graphics.setFont(g_font)
     gamestate.registerEvents()
     -- TODO(Vidar) change to menu for release

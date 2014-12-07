@@ -107,6 +107,11 @@
     <property name="interactable_type" value="sunflower_seed"/>
    </properties>
   </tile>
+  <tile id="11">
+   <properties>
+    <property name="interactable_type" value="berry_bush_seed"/>
+   </properties>
+  </tile>
   <tile id="15">
    <properties>
     <property name="interactable_type" value="pathway"/>
@@ -144,7 +149,7 @@
  </layer>
  <layer name="objects" width="40" height="40">
   <data encoding="base64" compression="zlib">
-   eJzt1EEKwCAMBdEsvVBbaQtuvP+ZmgME0UXxQ+aB+8GEmOFPbzF7/B1ld0msedct1HYGLV2ob8aOWavu10g0a6y7RP+xinYhF+4MAAAAAAC5fQyNA00=
+   eJzt1DEKwCAMRuGMXqi11EI7eP8zNQcIioP4g+8DF6eHkZhhpieZFT9HWl0Se73rFmo7g5bqd59QY8+KWav+r5Zo1hiXRd/xEu3CXtgzAAAAAADs7QdVnwOV
   </data>
  </layer>
  <layer name="other" width="40" height="40">
