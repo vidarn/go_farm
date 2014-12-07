@@ -18,6 +18,21 @@ function drop_item(player_id)
     player.inventory[player.active_inventory_slot] = nil
 end
 
+function pickup_item(id,player_id)
+    local player = game.players[player_id]
+    local inventory_id = get_free_slot(player_id) 
+    if inventory_id then
+            -- set the interactable world object to be unactive
+            game.sprites[id].active = false
+            game.interactables[id].active = false
+            -- add to player slot
+            game.players[player_id].inventory[inventory_id] = id
+            return true
+    else 
+        return false
+    end
+end
+
 function get_free_slot(player_id)
     local free_slot_found = false
     local inventory_id = 1
@@ -146,6 +161,9 @@ return {
         end,
     },
 
+
+    --- PLANTS
+
     sunflower = {
         create = function(id)
             set_sprite(id,"plants.png",1,1,0.8,1,32,64,-16,-64+8)
@@ -175,7 +193,6 @@ return {
             end
         end,
     },
-
     sunflower_seed = {
         create = function(id)
             game.item_properties[id] = {
@@ -192,25 +209,10 @@ return {
         end,
 
         interact = function(id,player_id)
-            print("Sunflower SEED!" .. id)
-            --check if player has room in inventory
-            local player = game.players[player_id]
-
-            local inventory_id = get_free_slot(player_id) 
-            if inventory_id then
-                    -- set the interactable world object to be unactive
-                    game.sprites[id].active = false
-                    game.interactables[id].active = false
-                    
-                    -- add to player slot
-                    game.players[player_id].inventory[inventory_id] = id
-            else 
-                print("NO SLOTS FREE!")
-            end
+            return pickup_item(id,player_id)
         end,
 
         drop = function(player_id)
-            print("DROP sunflower seed!")
             drop_item(player_id)
         end,
         use = function(player_id)
@@ -237,12 +239,11 @@ return {
 
             if planted then
                 consume_inventory_item(player_id)
-
-
-
             end
         end,
     },
+
+    --- TOOLS
     shovel_dev = {
         create = function(id,player_id)
             game.item_properties[id] = {
@@ -258,30 +259,7 @@ return {
         end,
         
         interact = function(id,player_id)
-            print("SHOVEL interact!" .. id)
-            --check if player has room in inventory
-            local player = game.players[player_id]
-
-            local free_slot_found = false
-            local inventory_id = 1
-            while (not free_slot_found and inventory_id <= player.inventory_slots) do
-                if player.inventory[inventory_id] == nil then
-                    free_slot_found = true
-                else
-                    inventory_id = inventory_id + 1 
-                end
-            end
-
-            if free_slot_found then
-                    -- set the interactable world object to be unactive
-                    game.sprites[id].active = false
-                    game.interactables[id].active = false
-                    
-                    -- add to player slot
-                    game.players[player_id].inventory[inventory_id] = id
-            else 
-                print("INGA SLOTS LEDIGA")
-            end
+            return pickup_item(id,player_id) 
         end,
 
         use = function(player_id)
@@ -313,7 +291,6 @@ return {
 
 
         drop = function(player_id)
-            print("DROP SHOVeL!")
             drop_item(player_id)
         end,
 
@@ -334,30 +311,7 @@ return {
         end,
         
         interact = function(id,player_id)
-            print("SHOVEL interact!" .. id)
-            --check if player has room in inventory
-            local player = game.players[player_id]
-
-            local free_slot_found = false
-            local inventory_id = 1
-            while (not free_slot_found and inventory_id <= player.inventory_slots) do
-                if player.inventory[inventory_id] == nil then
-                    free_slot_found = true
-                else
-                    inventory_id = inventory_id + 1 
-                end
-            end
-
-            if free_slot_found then
-                    -- set the interactable world object to be unactive
-                    game.sprites[id].active = false
-                    game.interactables[id].active = false
-                    
-                    -- add to player slot
-                    game.players[player_id].inventory[inventory_id] = id
-            else 
-                --no slots
-            end
+            return pickup_item(id,player_id) 
         end,
 
         use = function(player_id)
@@ -381,7 +335,6 @@ return {
         end,
 
         drop = function(player_id)
-            print("DROP SHOVeL!")
             drop_item(player_id)
         end,
     },
@@ -401,31 +354,7 @@ return {
         end,
         
         interact = function(id,player_id)
-            print("HOE interact!" .. id)
-            --check if player has room in inventory
-            local player = game.players[player_id]
-
-            local free_slot_found = false
-            local inventory_id = 1
-            while (not free_slot_found and inventory_id <= player.inventory_slots) do
-                if player.inventory[inventory_id] == nil then
-                    free_slot_found = true
-                else
-                    inventory_id = inventory_id + 1 
-                end
-            end
-
-            if free_slot_found then
-                    -- set the interactable world object to be unactive
-                    game.sprites[id].active = false
-                    game.interactables[id].active = false
-                    
-                    -- add to player slot
-                    game.players[player_id].inventory[inventory_id] = id
-            else 
-                --no slots
-            end
-            return true
+            return pickup_item(id,player_id);
         end,
 
         use = function(player_id)
@@ -449,7 +378,6 @@ return {
         end,
 
         drop = function(player_id)
-            print("DROP HOE!")
             drop_item(player_id)
         end,
 
@@ -562,4 +490,44 @@ return {
             end
         end
     },
+
+    -- other
+    pathway = {
+        create = function(id)
+            game.item_properties[id] = {
+                amount = 15
+            }
+            set_sprite(id,"objects.png",1,4,0.2,1,32,32,-16,-24)
+            print("Pathway CREATE")
+        end,
+
+        interact = function(id,player_id)
+            return pickup_item(id,player_id)
+        end,
+
+        check_interact = function(id,player_id)
+            return true
+        end,
+
+        use = function(player_id)
+            print("MAKE PATH")
+            local layer = game.map.layers['ground']
+            local tile, tileset = get_tile_and_tileset(game.pos[player_id].x, game.pos[player_id].y, layer)
+            if tile ~= nil then
+                local props = tileset.properties[tile]
+                if props ~= nil then
+                    for key,val in pairs(props) do
+                        print("cheking tiles.. key:",key," value:",val)
+                        local px = game.pos[player_id].x
+                        local py = game.pos[player_id].y
+                        if key == 'pathable' and val == 'true' then
+                            print("tile is pathable!")
+                            set_tile(px, py, layer, 181)
+                            consume_inventory_item(player_id)
+                        end
+                    end
+                end
+            end
+        end,
+    }
 }

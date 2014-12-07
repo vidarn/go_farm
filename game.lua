@@ -458,6 +458,7 @@ function game:draw()
             end
 
             -- draw items
+            love.graphics.setColor(255, 255, 255, 255)
             for key,item_id in pairs(player.inventory) do
                 local sprite = game.sprites[item_id]
                 local x
@@ -474,7 +475,6 @@ function game:draw()
                 -- draw amount if it exists
                 if game.item_properties[item_id] ~= nil and game.item_properties[item_id].amount ~= nil then
                     --love.graphics.print(game.item_properties[item_id].amount, x, y, 0, 51, 0, 0)
-                    love.graphics.setColor(255, 255, 255, 255)
                     love.graphics.print(game.item_properties[item_id].amount, x, y)
                 end
             end
