@@ -86,6 +86,8 @@ function game:init()
     game.tmp_canvas = love.graphics.newCanvas(g_screenres.w, g_screenres.h)
     game.canvas:setFilter('nearest','nearest')
     game.world = bump.newWorld(game.tile_size.w)
+    game.bkg = load_resource('clouds.png','sprite')
+    game.bkg_offset = 0
     add_player(8,8)
     add_camera(game.player_ids[1])
     game.keys[game.player_ids[1]] = {
@@ -300,6 +302,10 @@ function game:update(dt)
         end
         camera.shake_time = (camera.shake_time + dt*camera.shake_frequency)%1.0
     end
+    game.bkg_offset = game.bkg_offset + dt*4
+    while game.bkg_offset > game.bkg:getWidth() do
+        game.bkg_offset = game.bkg_offset - game.bkg:getWidth()
+    end
 end
 
 function draw_map_tile(x,y,layer)
@@ -325,8 +331,10 @@ function game:draw()
     love.graphics.setBackgroundColor(99,155,255)
     love.graphics.clear()
 
+    love.graphics.draw(game.bkg, math.floor(game.bkg_offset))
+    love.graphics.draw(game.bkg, math.floor(game.bkg_offset-game.bkg:getWidth()))
+
     love.graphics.push()
-    local bkg_parallax = 0.4
     for a,player_id in pairs(game.player_ids) do
         local camera = game.cameras[player_id]
 
