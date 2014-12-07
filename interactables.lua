@@ -151,6 +151,7 @@ return {
         end,
 
         check_interact = function(id,player_id)
+            local plant = game.plants[id]
             if plant.growth > 1 then
                 return true
             end
