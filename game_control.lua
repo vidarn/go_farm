@@ -24,11 +24,6 @@ function spawn_from_map(map,layername,hide_layer)
                         local properties = tileset.properties[tile]
                         if properties then
                             for key,val in pairs(properties) do
-                                if key == "spawn" then
-                                    if val == "coin" then
-                                        add_coin(x,y)
-                                    end
-                                end
                                 if key == "interactable_type" then
                                     add_interactable(x,y,val)
                                 end

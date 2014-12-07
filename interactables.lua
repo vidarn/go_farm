@@ -49,7 +49,7 @@ return {
             game.item_properties[id] = {
                 uses_left = 10
             }
-            set_sprite(id,"objects.png",5,1,0.2,1,32,32,-16,-24)
+            set_sprite(id,"objects.png",1,3,0.2,1,32,32,-16,-24)
 
             print("Sunflower seed CREATE")
         end,
@@ -107,12 +107,12 @@ return {
             end
         end,
     },
-    shovel_iron = {
+    shovel_dev = {
         create = function(id,player_id)
             game.item_properties[id] = {
                 uses_left = 10 --example
             }
-            set_sprite(id,"objects.png",3,1,0.2,1,32,32,-16,-24)
+            set_sprite(id,"objects.png",1,2,0.2,1,32,32,-16,-24)
 
             print("SHOVEL CREATE")
         end,
@@ -175,24 +175,73 @@ return {
 
         drop = function(player_id)
             print("DROP SHOVeL!")
-            local player = game.players[player_id]
-            local inv_id = get_current_inv_id(player_id)
-
-            --move shovel item in worlds and unhide it.
-            local x = game.pos[player_id].x 
-            local y = game.pos[player_id].y
-
-            game.pos[inv_id].x = x
-            game.pos[inv_id].y = y
-
-            game.sprites[inv_id].active = true
-            game.interactables[inv_id].active = true
-
-            --remove from inventory
-            player.inventory[player.active_inventory_slot] = nil
-
+            drop_item(player_id)
         end,
 
+    },
+
+    shovel_iron = {
+        create = function(id,player_id)
+            game.item_properties[id] = {
+                uses_left = 10 --example
+            }
+            set_sprite(id,"objects.png",2,2,0.2,1,32,32,-16,-24)
+
+            print("SHOVEL CREATE")
+        end,
+        
+        interact = function(id,player_id)
+            print("SHOVEL interact!" .. id)
+            --check if player has room in inventory
+            local player = game.players[player_id]
+
+            local free_slot_found = false
+            local inventory_id = 1
+            while (not free_slot_found and inventory_id <= player.inventory_slots) do
+                if player.inventory[inventory_id] == nil then
+                    free_slot_found = true
+                else
+                    inventory_id = inventory_id + 1 
+                end
+            end
+
+            if free_slot_found then
+                    -- set the interactable world object to be unactive
+                    game.sprites[id].active = false
+                    game.interactables[id].active = false
+                    
+                    -- add to player slot
+                    game.players[player_id].inventory[inventory_id] = id
+            else 
+                --no slots
+            end
+            return true
+        end,
+
+        use = function(player_id)
+            print("USE SHOVEL!")
+
+            local layer = game.map.layers['ground']
+            local tile, tileset = get_tile_and_tileset(game.pos[player_id].x, game.pos[player_id].y, layer)
+            print(tile)
+            if tile ~= nil then
+                local props = tileset.properties[tile]
+                if props ~= nil then
+                    for key,val in pairs(props) do
+                        local px = game.pos[player_id].x
+                        local py = game.pos[player_id].y
+                        if key == 'digable' and val == 'true' then
+                            set_tile(px, py, layer, 64)
+                        end
+                    end
+                end
+            end
+        end,
+
+        drop = function(player_id)
+            print("DROP SHOVeL!")
+            drop_item(player_id)
+        end,
     },
 
     hoe_iron = {
@@ -200,7 +249,7 @@ return {
             game.item_properties[id] = {
                 uses_left = 10 --example
             }
-            set_sprite(id,"objects.png",4,1,0.2,1,32,32,-16,-24)
+            set_sprite(id,"objects.png",3,2,0.2,1,32,32,-16,-24)
 
             print("HOE CREATE")
         end,
@@ -228,7 +277,7 @@ return {
                     -- add to player slot
                     game.players[player_id].inventory[inventory_id] = id
             else 
-                print("INGA SLOTS LEDIGA, sorry grabbar!")
+                --no slots
             end
             return true
         end,
@@ -255,22 +304,7 @@ return {
 
         drop = function(player_id)
             print("DROP HOE!")
-            local player = game.players[player_id]
-            local inv_id = get_current_inv_id(player_id)
-
-            --move item in worlds and unhide it.
-            local x = game.pos[player_id].x 
-            local y = game.pos[player_id].y
-
-            game.pos[inv_id].x = x
-            game.pos[inv_id].y = y
-
-            game.sprites[inv_id].active = true
-            game.interactables[inv_id].active = true
-
-            --remove from inventory
-            player.inventory[player.active_inventory_slot] = nil
-
+            drop_item(player_id)
         end,
 
     },
