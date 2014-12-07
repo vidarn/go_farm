@@ -471,16 +471,18 @@ return {
                     print(icon)
                     local grid = anim8.newGrid(32,32,icon:getWidth(),icon:getHeight())
                     local anim = anim8.newAnimation(grid(active_item.sprite.x,active_item.sprite.y),0.2)
+                    love.graphics.setColor(255,255,255,255*gui.alpha)
                     love.graphics.push()
                     love.graphics.translate(x-48,y-110)
                     love.graphics.draw(bkg)
-                    love.graphics.setColor(69,40,60)
+                    love.graphics.setColor(69,40,60,255*gui.alpha)
                     love.graphics.printf(active_item.price,59+6,50,25,'right')
-                    love.graphics.setColor(255,255,255)
+                    love.graphics.setColor(255,255,255,255*gui.alpha)
                     anim:draw(icon,10,10)
                     love.graphics.pop()
                 end,
                 active_slot = 1,
+                alpha = 0,
                 inventory = {
                 },
             }
@@ -499,6 +501,7 @@ return {
                         sprite = {x=3,y=1},
                         name = "hoe_iron",
                     })
+            timer.tween(0.4,gui,{alpha = 1.0},'in-out-expo')
             game.players[player_id].gui = gui
         end
     },
@@ -572,6 +575,10 @@ return {
                     end
                 end
             end
+        end,
+
+        drop = function(player_id)
+            drop_item(player_id)
         end,
     }
 }
