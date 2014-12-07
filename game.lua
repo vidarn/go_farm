@@ -17,6 +17,7 @@ game.num_chunks = {w=0,h=0}
 game.chunks_to_draw = {}
 game.debug = false
 game.player_ids = {}
+game.money = 40
 
 
 game.tile_size = {
@@ -471,10 +472,10 @@ function game:draw()
             end
             local y = g_screenres.h-margin
             love.graphics.rectangle("line",x,y,framesize,framesize)
-
-
         end
     end
+
+    love.graphics.print("$"..game.money,10,10)
 
 
 
