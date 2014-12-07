@@ -165,7 +165,11 @@ return {
             local plant = game.plants[id]
             if plant.growth > 1 then
                 if add_harvest_to_inventory(player_id,"sunflower_harvest") then
+                    local x = game.pos[id].x
+                    local y = game.pos[id].y
+                    local layer = game.map.layers['ground']
                     -- set tile to be hole
+                    set_tile(x, y, layer, 64)
                     kill_entity(id)
                 end
             end
