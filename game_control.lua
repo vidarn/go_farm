@@ -44,31 +44,19 @@ end
 function interact(player_id)
     local use_range= math.pow(18,2)
     local interacted = false
-    for id, interactable in pairs(game.interactables) do
-        --check that the object is on the same chunk as the player
-        local chunk_player_x, chunk_player_y = get_current_chunk(player_id)
-        local chunk_this_x, chunk_this_y = get_current_chunk(id)
-        if chunk_player_x == chunk_this_x and chunk_player_y == chunk_this_y then
-            --check that object is close
-            local dx = game.pos[id].x-game.pos[player_id].x
-            local dy = game.pos[id].y-game.pos[player_id].y
-            dx, dy = to_canvas_coord(dx,dy)
-            local distance = math.pow(dx,2) + math.pow(dy,2)
-            if interactable.active and (  distance < use_range ) then
-                -- run function for interactable
-                if interactable.functions.interact ~= nil then
-                    if interactable.functions.interact(id,player_id) == true then
-                        interacted = true
-                    end
-                end
-            end 
+    if game.players[player_id].available_interactable then
+        local id = game.players[player_id].available_interactable
+        local interactable = game.interactables[id]
+        if not interacted then
+            interactable.functions.interact(id,player_id)
         end
+        interacted = true
     end
     if not interacted then
         local inv = game.players[player_id].inventory[game.players[player_id].active_inventory_slot]
         if inv ~= nil then
             local interactable = game.interactables[inv]
-            if interactable.functions ~= nil and interactable.functions.use ~= nil then
+            if interactable ~= nil and interactable.functions ~= nil and interactable.functions.use ~= nil then
                 interactable.functions.use(player_id)
             end
         end
@@ -125,6 +113,45 @@ function update_player(dt,id)
         game.players[id].walking = walking
     end
 
+    -- check interactables within range
+    local closest = nil
+    local closest_dist = math.pow(18,2)
+    for i_id, interactable in pairs(game.interactables) do
+        --check that the object is on the same chunk as the player
+        local chunk_player_x, chunk_player_y = get_current_chunk(id)
+        local chunk_this_x, chunk_this_y = get_current_chunk(i_id)
+        if chunk_player_x == chunk_this_x and chunk_player_y == chunk_this_y then
+            --check that object is close
+            local dx = game.pos[i_id].x-game.pos[id].x
+            local dy = game.pos[i_id].y-game.pos[id].y
+            dx, dy = to_canvas_coord(dx,dy)
+            local distance = math.pow(dx,2) + math.pow(dy,2)
+            if interactable.active and (  distance < closest_dist ) then
+                if interactable.functions.interact ~= nil and interactable.functions.check_interact ~= nil then
+                    if interactable.functions.check_interact(i_id,id) == true then
+                        closest = i_id
+                        closest_dist = distance
+                    end
+                end
+            end 
+        end
+    end
+
+    if game.players[id].available_interactable ~= closest then
+        local hl_sprite = load_resource("hilight_interactable.png","sprite")
+        game.players[id].hl_sprite = hl_sprite
+        local hl_grid = anim8.newGrid(42,32,hl_sprite:getWidth(),hl_sprite:getHeight())
+        game.players[id].hl_grid = hl_grid
+        local h = 1
+        if game.player_ids[2] == id then h=2 end
+        game.players[id].hl_anim = anim8.newAnimation(hl_grid("4-1",h),0.05,'pauseAtEnd')
+    end
+
+    game.players[id].available_interactable = closest
+
+    if game.players[id].available_interactable ~= nil then
+        game.players[id].hl_anim:update(dt)
+    end
 end
 
 function update_plants(dt)

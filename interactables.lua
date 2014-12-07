@@ -113,11 +113,14 @@ return {
         create = function(id,player_id)
             set_sprite(id,"objects.png",1,1,0.2,1,32,32,-16,-24)
         end,
+
+        check_interact = function(id,player_id)
+            return true
+        end,
         
         interact = function(id,player_id)
             print("ball interact!" .. id)
             set_sprite(id,"objects.png",2,1,0.2,1,32,32,-16,-24)
-            return true
         end
     },
 
@@ -133,18 +136,21 @@ return {
             game.plants[id] = {species="sunflower", growth=0.0, state=0}
         end,
 
+        check_interact = function(id,player_id)
+            if plant.growth > 1 then
+                return true
+            end
+        end,
+
         interact = function(id,player_id)
             -- check if self is ready to be harvested.
-            print("SUNFLOWER INTERACT!")
             local player = game.players[player_id]
             local plant = game.plants[id]
             if plant.growth > 1 then
-            print("SUNFLOWER HARVEST!")
                 if add_harvest_to_inventory(player_id,"sunflower_harvest") then
                     -- set tile to be hole
                     kill_entity(id)
                 end
-                return true
             end
         end,
     },
@@ -157,6 +163,10 @@ return {
             set_sprite(id,"objects.png",1,3,0.2,1,32,32,-16,-24)
 
             print("Sunflower seed CREATE")
+        end,
+
+        check_interact = function(id,player_id)
+            return true
         end,
 
         interact = function(id,player_id)
@@ -175,7 +185,6 @@ return {
             else 
                 print("NO SLOTS FREE!")
             end
-            return true
         end,
 
         drop = function(player_id)
@@ -212,6 +221,10 @@ return {
 
             print("SHOVEL CREATE")
         end,
+
+        check_interact = function(id,player_id)
+            return true
+        end,
         
         interact = function(id,player_id)
             print("SHOVEL interact!" .. id)
@@ -238,7 +251,6 @@ return {
             else 
                 print("INGA SLOTS LEDIGA")
             end
-            return true
         end,
 
         use = function(player_id)
@@ -285,6 +297,10 @@ return {
 
             print("SHOVEL CREATE")
         end,
+
+        check_interact = function(id,player_id)
+            return true
+        end,
         
         interact = function(id,player_id)
             print("SHOVEL interact!" .. id)
@@ -311,7 +327,6 @@ return {
             else 
                 --no slots
             end
-            return true
         end,
 
         use = function(player_id)
@@ -348,6 +363,10 @@ return {
             set_sprite(id,"objects.png",3,2,0.2,1,32,32,-16,-24)
 
             print("HOE CREATE")
+        end,
+
+        check_interact = function(id,player_id)
+            return true
         end,
         
         interact = function(id,player_id)
@@ -409,6 +428,10 @@ return {
         create = function(id,player_id)
             set_sprite(id,"vending_machine.png",1,1,0.2,1,32,64,-16,-64+8)
         end,
+
+        check_interact = function(id,player_id)
+            return true
+        end,
         
         interact = function(id,player_id)
             set_sprite(id,"vending_machine.png","2-4",1,0.2,1,32,64,-16,-64+8)
@@ -441,7 +464,8 @@ return {
                 end,
                 draw = function(player_id)
                     print(game.players[player_id].gui.active_slot)
-                    local active_item = game.players[player_id].gui.inventory[game.players[player_id].gui.active_slot]
+                    local gui = game.players[player_id].gui
+                    local active_item = gui.inventory[gui.active_slot]
                     local x,y = to_canvas_coord(game.pos[id].x,game.pos[id].y)
                     local bkg = load_resource("shop_gui.png","sprite")
                     local icon   = load_resource("shop_icons.png","sprite")
@@ -451,6 +475,7 @@ return {
                     love.graphics.push()
                     love.graphics.translate(x-48,y-110)
                     love.graphics.draw(bkg)
+                    love.graphics.print(active_item.price,59+4,48)
                     anim:draw(icon,10,10)
                     love.graphics.pop()
                 end,
@@ -469,7 +494,7 @@ return {
                         name = "shovel_iron",
                     })
             table.insert(gui.inventory, {
-                        price = 200,
+                        price = 300,
                         sprite = {x=3,y=1},
                         name = "hoe_iron",
                     })

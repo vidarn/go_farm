@@ -345,6 +345,22 @@ function game:draw()
                         end
                     end
 
+
+                    -- Fix drawing of hilight squares when players are on the same chunk
+                    local players =game.player_ids
+                    if camera.last_num_active_chunks == 2 then
+                        players = {player_id}
+                    end
+                    for b,p_id in pairs(players) do
+                        -- draw interaction hilight, between ground and objects
+                        if game.players[p_id].available_interactable ~= nil then
+                            local id = game.players[p_id].available_interactable
+                            local interactable = game.interactables[id]
+                            local x,y = to_canvas_coord(game.pos[id].x,game.pos[id].y)
+                            game.players[p_id].hl_anim:draw(game.players[p_id].hl_sprite,x-21,y-22)
+                        end
+                    end
+
                     -- draw all objects and decoration in the correct order
                     for x = chunk_x*game.chunksize+1, (chunk_x+1)*game.chunksize do
                         for y = chunk_y*game.chunksize+1, (chunk_y+1)*game.chunksize do

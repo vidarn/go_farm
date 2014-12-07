@@ -47,6 +47,7 @@ function add_player(x,y)
         inventory_slots = 2,
         active_inventory_slot = 1,
         inventory = {},
+        available_interactables = nil,
         walking = false,
         gui = nil,
     }
