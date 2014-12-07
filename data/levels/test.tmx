@@ -108,6 +108,29 @@
    </properties>
   </tile>
  </tileset>
+ <tileset firstgid="2121" name="fence" tilewidth="32" tileheight="32">
+  <image source="../tiles/fence.png" width="202" height="142"/>
+  <tile id="0">
+   <properties>
+    <property name="collision" value="true"/>
+   </properties>
+  </tile>
+  <tile id="1">
+   <properties>
+    <property name="collision" value="true"/>
+   </properties>
+  </tile>
+  <tile id="6">
+   <properties>
+    <property name="collision" value="true"/>
+   </properties>
+  </tile>
+  <tile id="7">
+   <properties>
+    <property name="collision" value="true"/>
+   </properties>
+  </tile>
+ </tileset>
  <layer name="ground" width="40" height="40">
   <data encoding="base64" compression="zlib">
    eJzFlltuBCEMBIe51xDlWJvTZyMNUqXSBvKR7AeaJ6Zpt9204zjac5z3tT/Hdd+3+/7Eu44r53T92xFj/Nvx3c9vxUjziNPXgfk6MuaG/zvenYh9hecZvqYYnGs+xzdyZv7Gf8bBeeZ/ho/jA/fka8QmZvLntZlj8nQdOd8VPq7/eI73+0rM5sW6Mk9c35pJ+5vh8xqPe/Tjey6b1rTGrE3roGFcIV6Fj/EY9wLWpH3zYLzUl+vZ788JPurA2EauH0fOrTlzn6p00I6ffK7057w9NBzTde0aMe7Uu8jHqn6Zj/GO2NxTUx+nToiL/DXdj+cd/tzHPJLu+T/7CnFyL9Qm56/4ayGmPcB6cx+rtGVtul7agj/3KtYnsTG+68XfEkbu3//N+kvyC2NM+XFtmEPHSLkYc2b8kQPr9iveu/CZM/5rXVU63PWP5N/pnFF5KPEkfzEu62bVn6mRdJZxHSTt2f/68VMz3qP76Mx/XbN+dj68d/upNVz16R3/tZeaO/ce85Xqwlwmv7aOVvXrPDJP5jP1GWvD/Du2tfqb+q327Nqm9mc+c4UYrMUZvnTGZ0zm133XufeZJWHxGWHMm+Hj/7zOvNVe5T1VWnGsVX8hvlRXvk/+Z03Z11Z9YIXvLNZOXpvONu5/xpBq3zW84q/yf2vGdV3VdFVvxj7ez/C5B9g7Zue7mcclD0lnkB3+nMMrrOuceY7POY7lPfF+xZ95qfTtM07ixv6S/Ng1veKPPmHtO7fE7xpIeLhH18+Yv6M/zvE5wJpn3SR/8zvjcp/e0R91bU11reeezvWc4+Qhv+kvrqlK++411lHV29x7jH3Hf5MfVT3Xfc/c2vPsx8nrZ/jSWauqW9fdTHeuWe+R9zv4uKfU88e3nVh/MVyXrAOfpV6Br+rx7guv4s/+UY1X5pe9IZ1N/pu/Twqa8vI=
@@ -116,6 +139,11 @@
  <layer name="objects" width="40" height="40">
   <data encoding="base64" compression="zlib">
    eJzt1EEKwCAMBdEsvVBbaQtuvP+ZmgME0UXxQ+aB+8GEmOFPbzF7/B1ld0msedct1HYGLV2ob8aOWavu10g0a6y7RP+xinYhF+4MAAAAAAC5fQyNA00=
+  </data>
+ </layer>
+ <layer name="other" width="40" height="40">
+  <data encoding="base64" compression="zlib">
+   eJztzjEKgDAQRNEt92pqEe9/mmCVILFRhC3eg2mHH/HekRFnfjj4wb2nUt+WY/tiFVxtbWppRbqe6AMAAAAAYKUDAUUFlg==
   </data>
  </layer>
 </map>
