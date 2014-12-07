@@ -96,7 +96,21 @@ function add_harvest_to_inventory(player_id, harvest_type_string)
         print("NO SLOT FOUND FOR HARVEST!")
         return false
     end
+end
 
+function consume_inventory_item(player_id)
+    --used to count down usable inventory items, that will dissapear after a set number of uses.
+    local item_id = get_current_inv_id(player_id)
+    if item_id then
+        game.item_properties[item_id].amount = game.item_properties[item_id].amount - 1
+
+        if game.item_properties[item_id].amount <= 0 then
+            -- remove from inventory and delete
+            local slot = game.players[player_id].active_inventory_slot 
+            game.players[player_id].inventory[slot] = nil
+            kill_entity(item_id)
+        end
+    end
 end
 
 game.harvest_types = {
@@ -158,8 +172,9 @@ return {
     sunflower_seed = {
         create = function(id)
             game.item_properties[id] = {
-                uses_left = 10
+                amount = 4
             }
+
             set_sprite(id,"objects.png",1,3,0.2,1,32,32,-16,-24)
 
             print("Sunflower seed CREATE")
@@ -197,6 +212,7 @@ return {
             local layer = game.map.layers['ground']
             local tile, tileset = get_tile_and_tileset(game.pos[player_id].x, game.pos[player_id].y, layer)
             print(tile)
+            local planted = false
             if tile ~= nil then
                 local props = tileset.properties[tile]
                 if props ~= nil then
@@ -206,9 +222,17 @@ return {
                         if key == 'plantable' and val == 'true' then
                             set_tile(px, py, layer, 63)
                             add_interactable(math.floor(px),math.floor(py),'sunflower')
+                            planted = true
                         end
                     end
                 end
+            end
+
+            if planted then
+                consume_inventory_item(player_id)
+
+
+
             end
         end,
     },
