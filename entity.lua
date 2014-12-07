@@ -14,7 +14,8 @@ function add_camera(player_id)
         x = 0.0, y=0.0,
         shake_amplitude = 0.0, shake_frequency = 0.0,
         offset_x = 0.0, offset_y = 0.0,
-        last_chunk_x = 0, last_chunk_y = 0
+        last_chunk_x = 0, last_chunk_y = 0,
+        last_num_active_chunks = 1,
     }
 end
 

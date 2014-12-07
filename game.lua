@@ -233,6 +233,16 @@ function game:update(dt)
     end
     update_plants(dt)
 
+    local active_chunks = {}
+    for a,player_id in pairs(game.player_ids) do
+        local curr_x, curr_y = get_current_chunk(player_id)
+        active_chunks[curr_x + curr_y*game.num_chunks.w] = 1
+    end
+    local num_active_chunks = 0
+    for _,__ in pairs(active_chunks) do
+        num_active_chunks = num_active_chunks + 1
+    end
+
     for a,player_id in pairs(game.player_ids) do
         update_player(dt,player_id)
         for _,chunk in pairs(game.chunks_to_draw[player_id]) do
@@ -245,12 +255,15 @@ function game:update(dt)
 
         local camera = game.cameras[player_id]
 
-        if player_chunk_x ~= camera.last_chunk_x or player_chunk_y ~= camera.last_chunk_y then
+        if player_chunk_x ~= camera.last_chunk_x or player_chunk_y ~= camera.last_chunk_y or camera.last_num_active_chunks ~= num_active_chunks then
             local offset_x, offset_y = to_canvas_coord(player_chunk_x*game.chunksize, player_chunk_y*game.chunksize)
-            if a == 1 then
-                offset_x = offset_x - game.chunksize*game.map.tilewidth*0.5 - 3
+            if num_active_chunks == 2 then
+                if a == 1 then
+                    offset_x = offset_x - game.chunksize*game.map.tilewidth*0.5 - 3
+                else
+                    offset_x = offset_x + game.chunksize*game.map.tilewidth*0.5 + 3
+                end
             else
-                offset_x = offset_x + game.chunksize*game.map.tilewidth*0.5 + 3
             end
 
             timer.tween(0.2,camera,{x =offset_x, y = game.map.tileheight*0 + offset_y},'in-out-expo')
@@ -259,13 +272,15 @@ function game:update(dt)
             camera.last_chunk_x = player_chunk_x
             camera.last_chunk_y = player_chunk_y
 
+            -- Camera shake
             camera.x = camera.x + camera.shake_amplitude*love.math.noise(12345.2 + game.shake_time*camera.shake_frequency)
             camera.y = camera.y + camera.shake_amplitude*love.math.noise(31.5232 + game.shake_time*camera.shake_frequency)
             game.shake_time = (game.shake_time + dt)%1.0
         end
+        camera.last_num_active_chunks = num_active_chunks
         -- update chunks
         for _,chunk in pairs(game.chunks_to_draw[player_id]) do
-            if chunk.active == true then
+            if chunk.active == true and (num_active_chunks == 2 or a ==1 )then
                 chunk.alpha = chunk.alpha + dt*8
                 chunk.alpha = math.min(chunk.alpha, 1)
             else
