@@ -309,5 +309,76 @@ return {
 
     },
 
-    plant = {}
+    shop = {
+        create = function(id,player_id)
+            set_sprite(id,"vending_machine.png",1,1,0.2,1,32,64,-16,-64+8)
+        end,
+        
+        interact = function(id,player_id)
+            set_sprite(id,"vending_machine.png","2-4",1,0.2,1,32,64,-16,-64+8)
+            local gui = {
+                update = function(dt,player_id)
+                end,
+                keyreleased = function(key,player_id)
+                    if key == game.keys[player_id].down then
+                        game.players[player_id].gui = nil
+                        set_sprite(id,"vending_machine.png",1,1,0.2,1,32,64,-16,-64+8)
+                    end
+                    if key == game.keys[player_id].up then
+                        local gui = game.players[player_id].gui
+                        add_interactable(game.pos[id].x+1.5,game.pos[id].y,gui.inventory[gui.active_slot].name)
+                    end
+                    if key == game.keys[player_id].left then
+                        local gui = game.players[player_id].gui
+                        gui.active_slot = gui.active_slot - 1
+                        if gui.active_slot < 1 then
+                            gui.active_slot = #gui.inventory
+                        end
+                    end
+                    if key == game.keys[player_id].right then
+                        local gui = game.players[player_id].gui
+                        gui.active_slot = gui.active_slot + 1
+                        if gui.active_slot > #gui.inventory then
+                            gui.active_slot = 1
+                        end
+                    end
+                end,
+                draw = function(player_id)
+                    print(game.players[player_id].gui.active_slot)
+                    local active_item = game.players[player_id].gui.inventory[game.players[player_id].gui.active_slot]
+                    local x,y = to_canvas_coord(game.pos[id].x,game.pos[id].y)
+                    local bkg = load_resource("shop_gui.png","sprite")
+                    local icon   = load_resource("shop_icons.png","sprite")
+                    print(icon)
+                    local grid = anim8.newGrid(32,32,icon:getWidth(),icon:getHeight())
+                    local anim = anim8.newAnimation(grid(active_item.sprite.x,active_item.sprite.y),0.2)
+                    love.graphics.push()
+                    love.graphics.translate(x-48,y-110)
+                    love.graphics.draw(bkg)
+                    anim:draw(icon,10,10)
+                    love.graphics.pop()
+                end,
+                active_slot = 1,
+                inventory = {
+                },
+            }
+            table.insert(gui.inventory, {
+                        price = 130,
+                        sprite = {x=1,y=1},
+                        name = "sunflower_seed",
+                    })
+            table.insert(gui.inventory, {
+                        price = 200,
+                        sprite = {x=2,y=1},
+                        name = "shovel_iron",
+                    })
+            table.insert(gui.inventory, {
+                        price = 200,
+                        sprite = {x=3,y=1},
+                        name = "hoe_iron",
+                    })
+            game.players[player_id].gui = gui
+            return true
+        end
+    }
 }

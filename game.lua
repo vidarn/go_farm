@@ -119,23 +119,26 @@ function game:keyreleased(key, code)
         game.debug = true
     end
     for _,player_id in pairs(game.player_ids) do
-        if key == game.keys[player_id].interact then
-            interact(player_id) --keyboard is treated as player one
-        end
-        if key == game.keys[player_id].drop then
-            local interactable = game.interactables[get_current_inv_id(player_id)]
-            print(interactable)
-            if interactable ~= nil then
-                if interactable.functions ~= nil then
-                    if interactable.functions.drop ~= nil then
-                      interactable.functions.drop(player_id)
+        if game.players[player_id].gui == nil then
+            if key == game.keys[player_id].interact then
+                interact(player_id) --keyboard is treated as player one
+            end
+            if key == game.keys[player_id].drop then
+                local interactable = game.interactables[get_current_inv_id(player_id)]
+                print(interactable)
+                if interactable ~= nil then
+                    if interactable.functions ~= nil then
+                        if interactable.functions.drop ~= nil then
+                          interactable.functions.drop(player_id)
+                        end
                     end
                 end
             end
-        end
-        if key == game.keys[player_id].cycle then
-            print('smurf')
-            next_inventory_item(player_id)
+            if key == game.keys[player_id].cycle then
+                next_inventory_item(player_id)
+            end
+        else
+            game.players[player_id].gui.keyreleased(key,player_id)
         end
     end
 end
@@ -390,9 +393,15 @@ function game:draw()
                 end
             end
         end
+        -- floating guis
+        if game.players[player_id].gui ~= nil then
+            game.players[player_id].gui.draw(player_id)
+        end
     end
 
     love.graphics.pop()
+
+
 
     --hud stuff
     for player_number = 1, 2, 1 do 

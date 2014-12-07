@@ -48,6 +48,7 @@ function add_player(x,y)
         active_inventory_slot = 1,
         inventory = {},
         walking = false,
+        gui = nil,
     }
 
     game.pos[id] = {x=x,y=y,vx=0,vy=0}
@@ -66,6 +67,8 @@ end
 
 function add_interactable(x,y,interactable_type)
     local id = new_entity()
+
+    print(interactable_type)
 
     game.interactables[id] = {}
     game.interactables[id].functions = game.interactable_functions[interactable_type]

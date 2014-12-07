@@ -54,8 +54,6 @@ function interact(player_id)
             local dy = game.pos[id].y-game.pos[player_id].y
             dx, dy = to_canvas_coord(dx,dy)
             local distance = math.pow(dx,2) + math.pow(dy,2)
-            print("interact distance"..distance)
-            print("id",id,"active:",interactable.active)
             if interactable.active and (  distance < use_range ) then
                 -- run function for interactable
                 if interactable.functions.interact ~= nil then
@@ -81,27 +79,32 @@ function update_player(dt,id)
     local accel = 600.0
     local walking = false
 
-    if love.keyboard.isDown(game.keys[id].left) then
-        game.pos[id].vx = game.pos[id].vx - accel*dt
-        game.pos[id].vy = game.pos[id].vy + accel*dt
-        game.direction[id] = -1
-        walking = true
-    end
-    if love.keyboard.isDown(game.keys[id].right) then
-        game.pos[id].vx = game.pos[id].vx + accel*dt
-        game.pos[id].vy = game.pos[id].vy - accel*dt
-        game.direction[id] = 1
-        walking = true
-    end
-    if love.keyboard.isDown(game.keys[id].up) then
-        game.pos[id].vx = game.pos[id].vx - accel*dt
-        game.pos[id].vy = game.pos[id].vy - accel*dt
-        walking = true
-    end
-    if love.keyboard.isDown(game.keys[id].down) then
-        game.pos[id].vx = game.pos[id].vx + accel*dt
-        game.pos[id].vy = game.pos[id].vy + accel*dt
-        walking = true
+    if game.players[id].gui == nil then
+
+        if love.keyboard.isDown(game.keys[id].left) then
+            game.pos[id].vx = game.pos[id].vx - accel*dt
+            game.pos[id].vy = game.pos[id].vy + accel*dt
+            game.direction[id] = -1
+            walking = true
+        end
+        if love.keyboard.isDown(game.keys[id].right) then
+            game.pos[id].vx = game.pos[id].vx + accel*dt
+            game.pos[id].vy = game.pos[id].vy - accel*dt
+            game.direction[id] = 1
+            walking = true
+        end
+        if love.keyboard.isDown(game.keys[id].up) then
+            game.pos[id].vx = game.pos[id].vx - accel*dt
+            game.pos[id].vy = game.pos[id].vy - accel*dt
+            walking = true
+        end
+        if love.keyboard.isDown(game.keys[id].down) then
+            game.pos[id].vx = game.pos[id].vx + accel*dt
+            game.pos[id].vy = game.pos[id].vy + accel*dt
+            walking = true
+        end
+    else
+        game.players[id].gui.update(dt,id)
     end
 
     if walking ~= game.players[id].walking then
