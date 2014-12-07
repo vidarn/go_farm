@@ -426,15 +426,22 @@ function game:draw()
             -- draw items
             for key,item_id in pairs(player.inventory) do
                 local sprite = game.sprites[item_id]
+                local x
+                if player_number == 1 then
+                    x = g_screenres.w-margin - framesize*(key-1)
+                else
+                    x = margin + framesize*(key-1)
+                end
+                local y = g_screenres.h-margin
+
                 if sprite ~= nil and item_id ~= nil and key ~= nil then
-                    local x
-                    if player_number == 1 then
-                        x = g_screenres.w-margin - framesize*(key-1)
-                    else
-                        x = margin + framesize*(key-1)
-                    end
-                    local y = g_screenres.h-margin
                     sprite.anim:draw(sprite.sprite,x,y-8)
+                end
+                -- draw amount if it exists
+                if game.item_properties[item_id] ~= nil and game.item_properties[item_id].amount ~= nil then
+                    --love.graphics.print(game.item_properties[item_id].amount, x, y, 0, 51, 0, 0)
+                    love.graphics.setColor(255, 255, 255, 255)
+                    love.graphics.print(game.item_properties[item_id].amount, x, y)
                 end
             end
             
