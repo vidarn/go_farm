@@ -12,7 +12,7 @@ end
 function add_camera(player_id)
     game.cameras[player_id] = {
         x = 0.0, y=0.0,
-        shake_amplitude = 0.0, shake_frequency = 0.0,
+        shake_amplitude = 4.0, shake_frequency = 0.2, shake_time = 0.0,
         offset_x = 0.0, offset_y = 0.0,
         last_chunk_x = 0, last_chunk_y = 0,
         last_num_active_chunks = 1,
@@ -29,12 +29,12 @@ function add_player(x,y)
     local h = 0.5
     local center_x = 0.5
     local center_y = 1.0
-    local sprite_w = 20
-    local sprite_h = 20
+    local sprite_w = 32
+    local sprite_h = 64
     local t_w, t_h = to_canvas_coord(w,h)
     local offset_x = (-sprite_w)*center_x
     local offset_y = (-sprite_h)*center_y
-    set_sprite(id,"human_regular_hair.png","3-5",2,0.2,1,sprite_w,sprite_h,offset_x, offset_y)
+    set_sprite(id,"player.png",1,1,0.2,1,sprite_w,sprite_h,offset_x, offset_y)
     game.dynamic[id] = true
 
     game.player_count = game.player_count + 1
@@ -46,7 +46,8 @@ function add_player(x,y)
     game.players[id] = {
         inventory_slots = 2,
         active_inventory_slot = 1,
-        inventory = {}
+        inventory = {},
+        walking = false,
     }
 
     game.pos[id] = {x=x,y=y,vx=0,vy=0}
