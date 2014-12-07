@@ -80,6 +80,11 @@ function game:resize(w,h)
     game.canvas:setFilter('nearest','nearest')
 end
 
+function game:enter()
+    game.keys[game.player_ids[1]] = g_keys[1]
+    game.keys[game.player_ids[2]] = g_keys[2]
+end
+
 function game:init()
     create_component_managers()
     game.canvas = love.graphics.newCanvas(g_screenres.w, g_screenres.h)
@@ -90,27 +95,9 @@ function game:init()
     game.bkg_offset = 0
     add_player(8,8)
     add_camera(game.player_ids[1])
-    game.keys[game.player_ids[1]] = {
-            up = 'up', 
-            down = 'down', 
-            left = 'left', 
-            right = 'right', 
-            interact = 'return',
-            drop = ' ',
-            cycle = 'backspace',
-    }
 
     add_player(8,9)
     add_camera(game.player_ids[2])
-    game.keys[game.player_ids[2]] = {
-            up = 'w', 
-            down = 's', 
-            left = 'a', 
-            right = 'd', 
-            interact = 'e',
-            drop = 'q',
-            cycle = 'tab',
-    }
 
     -- load map
     game.map = load_resource("data/levels/test.lua","map")
@@ -124,9 +111,6 @@ function game:init()
 end
 
 function game:keyreleased(key, code)
-    if key == 'escape' then
-        gamestate.switch(g_menu)
-    end
     if key == 'f1' then
         game.debug = true
     end
@@ -137,7 +121,6 @@ function game:keyreleased(key, code)
             end
             if key == game.keys[player_id].drop then
                 local interactable = game.interactables[get_current_inv_id(player_id)]
-                print(interactable)
                 if interactable ~= nil then
                     if interactable.functions ~= nil then
                         if interactable.functions.drop ~= nil then
@@ -474,7 +457,6 @@ function game:draw()
                 end
                 -- draw amount if it exists
                 if game.item_properties[item_id] ~= nil and game.item_properties[item_id].amount ~= nil then
-                    --love.graphics.print(game.item_properties[item_id].amount, x, y, 0, 51, 0, 0)
                     love.graphics.print(game.item_properties[item_id].amount, x, y)
                 end
             end
@@ -496,7 +478,7 @@ function game:draw()
         end
     end
 
-    love.graphics.setColor(69,40,60)
+    love.graphics.setColor(255,255,255)
     love.graphics.print("$"..game.money,10,10)
 
 

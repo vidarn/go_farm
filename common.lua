@@ -67,3 +67,10 @@ function get_current_chunk(player_id)
     return x,y
 end
 
+function play_sound(name)
+    print(name..".wav")
+    local sound = load_resource(name..".wav","sfx"),
+    print(sound)
+    love.audio.play(sound)
+end
+
