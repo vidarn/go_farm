@@ -510,7 +510,9 @@ return {
                     love.graphics.push()
                     love.graphics.translate(x-48,y-110)
                     love.graphics.draw(bkg)
+                    love.graphics.setColor(69,40,60)
                     love.graphics.printf(active_item.price,59+6,50,25,'right')
+                    love.graphics.setColor(255,255,255)
                     anim:draw(icon,10,10)
                     love.graphics.pop()
                 end,
