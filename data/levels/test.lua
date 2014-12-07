@@ -27,25 +27,29 @@ return {
         {
           id = 0,
           properties = {
-            ["digable"] = "true"
+            ["digable"] = "true",
+            ["pathable"] = "true"
           }
         },
         {
           id = 1,
           properties = {
-            ["digable"] = "true"
+            ["digable"] = "true",
+            ["pathable"] = "true"
           }
         },
         {
           id = 60,
           properties = {
-            ["digable"] = "true"
+            ["digable"] = "true",
+            ["pathable"] = "true"
           }
         },
         {
           id = 61,
           properties = {
-            ["digable"] = "true"
+            ["digable"] = "true",
+            ["pathable"] = "true"
           }
         },
         {
@@ -63,13 +67,15 @@ return {
         {
           id = 120,
           properties = {
-            ["digable"] = "true"
+            ["digable"] = "true",
+            ["pathable"] = "true"
           }
         },
         {
           id = 121,
           properties = {
-            ["digable"] = "true"
+            ["digable"] = "true",
+            ["pathable"] = "true"
           }
         }
       }
@@ -82,8 +88,8 @@ return {
       spacing = 0,
       margin = 0,
       image = "../tiles/objects.png",
-      imagewidth = 167,
-      imageheight = 96,
+      imagewidth = 160,
+      imageheight = 128,
       tileoffset = {
         x = 0,
         y = 0
@@ -147,6 +153,12 @@ return {
           id = 10,
           properties = {
             ["interactable_type"] = "sunflower_seed"
+          }
+        },
+        {
+          id = 15,
+          properties = {
+            ["interactable_type"] = "pathway"
           }
         }
       }
@@ -223,7 +235,7 @@ return {
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 2108, 2107, 2101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 2111, 2106, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 2102, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 2102, 0, 0, 0, 0, 2116, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 2101, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0, 0, 0, 0, 0, 0, 0, 2102, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
