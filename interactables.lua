@@ -183,7 +183,11 @@ return {
             local plant = game.plants[id]
             if plant.growth > 1 then
                 if add_harvest_to_inventory(player_id,"sunflower_harvest") then
+                    local x = game.pos[id].x
+                    local y = game.pos[id].y
+                    local layer = game.map.layers['ground']
                     -- set tile to be hole
+                    set_tile(x, y, layer, 64)
                     kill_entity(id)
                 end
             end
@@ -400,7 +404,11 @@ return {
                     end
                     if key == game.keys[player_id].up then
                         local gui = game.players[player_id].gui
-                        add_interactable(game.pos[id].x+1.5,game.pos[id].y,gui.inventory[gui.active_slot].name)
+                        local active_item = gui.inventory[gui.active_slot]
+                        if game.money >= active_item.price then
+                            add_interactable(game.pos[id].x+1.5,game.pos[id].y,gui.inventory[gui.active_slot].name)
+                            game.money = game.money - active_item.price
+                        end
                     end
                     if key == game.keys[player_id].left then
                         local gui = game.players[player_id].gui
@@ -430,7 +438,9 @@ return {
                     love.graphics.push()
                     love.graphics.translate(x-48,y-110)
                     love.graphics.draw(bkg)
-                    love.graphics.print(active_item.price,59+4,48)
+                    love.graphics.setColor(69,40,60)
+                    love.graphics.printf(active_item.price,59+6,50,25,'right')
+                    love.graphics.setColor(255,255,255)
                     anim:draw(icon,10,10)
                     love.graphics.pop()
                 end,
@@ -439,7 +449,7 @@ return {
                 },
             }
             table.insert(gui.inventory, {
-                        price = 130,
+                        price = 30,
                         sprite = {x=1,y=1},
                         name = "sunflower_seed",
                     })
@@ -470,12 +480,10 @@ return {
             --set_sprite(id,"vending_machine.png","2-4",1,0.2,1,32,64,-16,-64+8)
             local player = game.players[player_id]
             local inv = player.inventory[player.active_inventory_slot]
-            print('aaa')
             if inv ~= nil then
-                print('bbb')
                 local item_prop = game.item_properties[inv]
                 if item_prop ~= nil and item_prop.price ~= nil then
-                    print('ddd')
+                    game.money = game.money + item_prop.price*item_prop.amount
                     player.inventory[player.active_inventory_slot] = nil
                     kill_entity(inv)
                 end

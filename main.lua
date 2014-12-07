@@ -6,10 +6,14 @@ require "game"
 g_menu = {}
 
 g_screenres = {
-    w=400,h=300
+    w=math.floor(love.graphics.getWidth()/2),
+    h=math.floor(love.graphics.getHeight()/2)
 }
 
+g_font = love.graphics.newImageFont(load_resource('8pxfont.png','font'),[[!"#$%&`()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_'abcdefghijlkmnopqrstuvwxyz{|}~]])
+
 function love.load()
+    love.graphics.setFont(g_font)
     gamestate.registerEvents()
     gamestate.switch(game)
 end

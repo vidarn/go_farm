@@ -17,6 +17,7 @@ game.num_chunks = {w=0,h=0}
 game.chunks_to_draw = {}
 game.debug = false
 game.player_ids = {}
+game.money = 40
 
 
 game.tile_size = {
@@ -69,6 +70,15 @@ function new_entity()
     return table.getn(game.alive)
 end
 
+function game:resize(w,h)
+    g_screenres = {
+        w=math.floor(love.graphics.getWidth()/2),
+        h=math.floor(love.graphics.getHeight()/2)
+    }
+    game.canvas = love.graphics.newCanvas(g_screenres.w, g_screenres.h)
+    game.tmp_canvas = love.graphics.newCanvas(g_screenres.w, g_screenres.h)
+    game.canvas:setFilter('nearest','nearest')
+end
 
 function game:init()
     create_component_managers()
@@ -471,30 +481,27 @@ function game:draw()
             end
             local y = g_screenres.h-margin
             love.graphics.rectangle("line",x,y,framesize,framesize)
-
-
         end
     end
+
+    love.graphics.setColor(69,40,60)
+    love.graphics.print("$"..game.money,10,10)
 
 
 
     -- Draw scaled canvas to screen
-    love.graphics.setBackgroundColor(0,0,0,0)
+    love.graphics.setBackgroundColor(99,155,255)
     love.graphics.setColor(255,255,255)
     love.graphics.setCanvas()
     love.graphics.clear()
     local h = love.graphics.getHeight()
     local w = love.graphics.getWidth()
-    local aspect = g_screenres.w/g_screenres.h
-    if aspect < w/h then
-        local w = love.graphics.getWidth()
-        local quad = love.graphics.newQuad(0,0,h*aspect,h,h*aspect,h)
-        love.graphics.draw(game.canvas, quad, (w-h*aspect)*0.5, 0)
-    else
-        aspect = 1/aspect
-        local quad = love.graphics.newQuad(0,0,w,w*aspect,w,w*aspect)
-        love.graphics.draw(game.canvas, quad, 0, (h-w*aspect)*0.5)
-    end
+    local s_w = g_screenres.w*2
+    local s_h = g_screenres.h*2
+    local quad = love.graphics.newQuad(0,0,s_w,s_h,s_w,s_h)
+    local x = math.floor((w-s_w)*0.5)
+    local y = math.floor((h-s_h)*0.5)
+    love.graphics.draw(game.canvas, quad, x, y)
     -- draw inventory HUD
 end
 

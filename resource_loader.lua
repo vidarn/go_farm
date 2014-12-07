@@ -70,6 +70,9 @@ function load_resource(name,resource_type)
         if resource_type == "tiles" then
             resource = love.graphics.newImage("data/tiles/"..filename)
         end
+        if resource_type == "font" then
+            resource = love.graphics.newImage("data/fonts/"..filename)
+        end
         if resource_type == "map" then
             resource = load_map("data/levels/"..filename)
         end
