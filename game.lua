@@ -93,10 +93,10 @@ function game:init()
     game.world = bump.newWorld(game.tile_size.w)
     game.bkg = load_resource('clouds.png','sprite')
     game.bkg_offset = 0
-    add_player(8,8)
+    add_player(14,15)
     add_camera(game.player_ids[1])
 
-    add_player(8,9)
+    add_player(10,26)
     add_camera(game.player_ids[2])
 
     -- load map
