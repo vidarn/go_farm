@@ -408,7 +408,7 @@ function game:draw()
                 if player_number == 1 then
                     x = g_screenres.w-margin - framesize*(frame-1)
                 else
-                    x = margin + framesize*(frame-1)
+                    x = 10 + framesize*(frame-1)
                 end
                 local y = g_screenres.h-margin
                 love.graphics.rectangle("fill",x,y,framesize,framesize)
@@ -421,7 +421,7 @@ function game:draw()
                 if player_number == 1 then
                     x = g_screenres.w-margin - framesize*(key-1)
                 else
-                    x = margin + framesize*(key-1)
+                    x = 10 + framesize*(key-1)
                 end
                 local y = g_screenres.h-margin
 
@@ -442,7 +442,7 @@ function game:draw()
             if player_number == 1 then
                 x = g_screenres.w-margin - framesize*(player.active_inventory_slot-1)
             else
-                x = margin + framesize*(player.active_inventory_slot-1)
+                x = 10 + framesize*(player.active_inventory_slot-1)
             end
             local y = g_screenres.h-margin
             love.graphics.rectangle("line",x,y,framesize,framesize)
