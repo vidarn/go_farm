@@ -67,7 +67,8 @@
   </tile>
   <tile id="3">
    <properties>
-    <property name="interactable_type" value="hoe_iron"/>
+    <property name="collision" value="true"/>
+    <property name="interactable_type" value="market"/>
    </properties>
   </tile>
   <tile id="4">
@@ -103,7 +104,7 @@
  </layer>
  <layer name="objects" width="40" height="40">
   <data encoding="base64" compression="zlib">
-   eJzt1EEKgDAMBMAc+yEVtOD/f2UfoB6E0mBnIPclGxJBT7VEHG2WMjrJvbPl2hNlWxNl+WpE11nv680fus5gs0d45M8AAADA3C6/mQLB
+   eJzt1F0KABAQReF5tCE/oex/VyxAHpTcOF95P5lpzHBSdWZlPO9ul8y10ZWF2oJQy64bs1bdr5UXZq0giv5jEu3CX7gzAAAAAAD8rQNo3AMB
   </data>
  </layer>
 </map>

@@ -526,5 +526,20 @@ return {
             game.players[player_id].gui = gui
             return true
         end
-    }
+    },
+
+    market = {
+        create = function(id,player_id)
+            set_sprite(id,"vending_machine.png",1,2,0.2,1,32,64,-16,-64+8)
+        end,
+
+        check_interact = function(id,player_id)
+            return true
+        end,
+        
+        interact = function(id,player_id)
+            --set_sprite(id,"vending_machine.png","2-4",1,0.2,1,32,64,-16,-64+8)
+            return true
+        end
+    },
 }
