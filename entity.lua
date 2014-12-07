@@ -34,7 +34,8 @@ function add_player(x,y)
     local t_w, t_h = to_canvas_coord(w,h)
     local offset_x = (-sprite_w)*center_x
     local offset_y = (-sprite_h)*center_y
-    set_sprite(id,"player.png",1,1,0.2,1,sprite_w,sprite_h,offset_x, offset_y)
+
+    set_sprite(id,"player.png",1,1+game.player_count,0.2,1,sprite_w,sprite_h,offset_x, offset_y)
     game.dynamic[id] = true
 
     game.player_count = game.player_count + 1

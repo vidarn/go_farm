@@ -319,7 +319,7 @@ function draw_map_tile(x,y,layer)
             local th = tileset.tileheight
             local quad = love.graphics.newQuad(tx*tw, ty*th,tw,th,tileset.imagewidth, tileset.imageheight)
             local draw_x = (x-y-1)*game.map.tilewidth*0.5
-            local draw_y = (x+y-1)*game.map.tileheight*0.5
+            local draw_y = (x+y+3)*game.map.tileheight*0.5-th
             love.graphics.draw(tileset.loaded_image, quad, draw_x, draw_y)
         end
     end
@@ -480,7 +480,11 @@ function game:draw()
             end
             
             -- highlight active slot
-            love.graphics.setColor(255,255,255)
+            if player_number == 1 then 
+                love.graphics.setColor(63,63,116)
+            else
+                love.graphics.setColor(172,50,50)
+            end
             local x
             if player_number == 1 then
                 x = g_screenres.w-margin - framesize*(player.active_inventory_slot-1)

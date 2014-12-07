@@ -66,6 +66,8 @@ end
 function update_player(dt,id)
     local accel = 600.0
     local walking = false
+    local player_num = 1
+    if game.player_ids[2] == id then player_num=2 end
 
     if game.players[id].gui == nil then
 
@@ -106,9 +108,9 @@ function update_player(dt,id)
         local offset_x = (-sprite_w)*center_x
         local offset_y = (-sprite_h)*center_y
         if walking == true then
-            set_sprite(id,"player_walk.png","1-10",1,0.1,1,sprite_w,sprite_h,offset_x, offset_y)
+            set_sprite(id,"player_walk.png","1-10",player_num,0.1,1,sprite_w,sprite_h,offset_x, offset_y)
         else
-            set_sprite(id,"player.png",1,1,0.2,game.direction[id],sprite_w,sprite_h,offset_x, offset_y)
+            set_sprite(id,"player.png",1,player_num,0.2,game.direction[id],sprite_w,sprite_h,offset_x, offset_y)
         end
         game.players[id].walking = walking
     end
@@ -142,9 +144,7 @@ function update_player(dt,id)
         game.players[id].hl_sprite = hl_sprite
         local hl_grid = anim8.newGrid(42,32,hl_sprite:getWidth(),hl_sprite:getHeight())
         game.players[id].hl_grid = hl_grid
-        local h = 1
-        if game.player_ids[2] == id then h=2 end
-        game.players[id].hl_anim = anim8.newAnimation(hl_grid("4-1",h),0.05,'pauseAtEnd')
+        game.players[id].hl_anim = anim8.newAnimation(hl_grid("4-1",player_num),0.05,'pauseAtEnd')
     end
 
     game.players[id].available_interactable = closest
