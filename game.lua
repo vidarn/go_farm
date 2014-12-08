@@ -487,6 +487,7 @@ function game:draw()
     love.graphics.print("$"..game.money,10,10)
     local t_w = 300
     love.graphics.printf(game.message,(g_screenres.w-t_w)*0.5,g_screenres.h-20,t_w,'center')
+    love.graphics.printf("GO FARM!",(g_screenres.w-t_w)*0.5,g_screenres.h*0.5-80,t_w,'center')
 
 
     -- Draw scaled canvas to screen
