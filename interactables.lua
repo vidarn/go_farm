@@ -632,7 +632,7 @@ return {
                 --small backpack
                 table.insert(gui.inventory, {
                         price = 200,
-                        sprite = {x=1,y=1},
+                        sprite = {x=2,y=2},
                         func = function(slot,gui)
                             for _,id in pairs(game.player_ids) do
                                 game.players[id].inventory_slots = game.players[id].inventory_slots + 1
@@ -646,7 +646,7 @@ return {
                 --large backpack
                 table.insert(gui.inventory, {
                         price = 800,
-                        sprite = {x=1,y=1},
+                        sprite = {x=3,y=2},
                         func = function(slot,gui)
                             for _,id in pairs(game.player_ids) do
                                 game.players[id].inventory_slots = game.players[id].inventory_slots + 1
