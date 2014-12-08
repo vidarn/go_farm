@@ -72,6 +72,7 @@ function menu:keyreleased(key, code)
             if menu.active_player == 1 then
                 menu.ask_switch_player = true
             else
+                g_num_players = 2
                 gamestate.switch(game)
             end
         else

@@ -17,7 +17,7 @@ game.num_chunks = {w=0,h=0}
 game.chunks_to_draw = {}
 game.debug = false
 game.player_ids = {}
-game.money = 40
+game.money = 400
 
 
 game.tile_size = {
@@ -82,7 +82,9 @@ end
 
 function game:enter()
     game.keys[game.player_ids[1]] = g_keys[1]
-    game.keys[game.player_ids[2]] = g_keys[2]
+    if g_num_players == 2 then
+        game.keys[game.player_ids[2]] = g_keys[2]
+    end
 end
 
 function game:init()
@@ -96,8 +98,10 @@ function game:init()
     add_player(14,15)
     add_camera(game.player_ids[1])
 
-    add_player(10,26)
-    add_camera(game.player_ids[2])
+    if g_num_players == 2 then
+        add_player(10,26)
+        add_camera(game.player_ids[2])
+    end
 
     -- load map
     game.map = load_resource("data/levels/test.lua","map")
