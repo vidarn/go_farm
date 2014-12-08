@@ -20,6 +20,7 @@ game.player_ids = {}
 game.money = 40000
 game.harvest_tip_shown = false
 game.message = ""
+game.go_farm_alpha = 1
 
 game.tile_size = {
     w=32,h=16,
@@ -98,6 +99,8 @@ function game:init()
     game.bkg_offset = 0
     add_player(14,15)
     add_camera(game.player_ids[1])
+
+    timer.tween(2,game,{go_farm_alpha =0},'out-expo')
 
     if g_num_players == 2 then
         add_player(10,26)
@@ -487,6 +490,7 @@ function game:draw()
     love.graphics.print("$"..game.money,10,10)
     local t_w = 300
     love.graphics.printf(game.message,(g_screenres.w-t_w)*0.5,g_screenres.h-20,t_w,'center')
+    love.graphics.setColor(255,255,255,255*game.go_farm_alpha)
     love.graphics.printf("GO FARM!",(g_screenres.w-t_w)*0.5,g_screenres.h*0.5-80,t_w,'center')
 
 
