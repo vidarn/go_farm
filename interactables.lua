@@ -207,6 +207,13 @@ game.harvest_types = {
         max_amount = 10,
         price = 20,
     },
+    carrot_harvest = {
+        set_sprite = function(id)
+            set_sprite(id,"objects.png",4,4,0.2,1,32,32,-16,-24)
+        end,
+        max_amount = 10,
+        price = 20,
+    },
 }
 
 return {
@@ -360,6 +367,44 @@ return {
         end,
         use = function(player_id)
             seed_use(player_id,'maize')
+        end,
+    },
+    carrot = {
+        create = function(id)
+            set_sprite(id,"plants.png",5,2,0.8,1,32,64,-16,-64+8)
+            game.plants[id] = {species="carrot", growth=0.0, state=0}
+        end,
+
+        check_interact = function(id,player_id)
+            return plant_check_interact(id)
+        end,
+
+        interact = function(id,player_id)
+            plant_interact(id,player_id,'carrot_harvest')
+        end,
+    },
+    carrot_seed = {
+        create = function(id)
+            game.item_properties[id] = {
+                amount = 5
+            }
+
+            set_sprite(id,"objects.png",4,3,0.2,1,32,32,-16,-24)
+        end,
+
+        check_interact = function(id,player_id)
+            return true
+        end,
+
+        interact = function(id,player_id)
+            return pickup_item(id,player_id)
+        end,
+
+        drop = function(player_id)
+            drop_item(player_id)
+        end,
+        use = function(player_id)
+            seed_use(player_id,'carrot')
         end,
     },
 
@@ -615,6 +660,16 @@ return {
                     })
             table.insert(gui.inventory, {
                         price = 150,
+                        sprite = {x=4,y=1},
+                        name = "berry_bush_seed",
+                    })
+            table.insert(gui.inventory, {
+                        price = 150,
+                        sprite = {x=3,y=2},
+                        name = "carrot_seed",
+                    })
+            table.insert(gui.inventory, {
+                        price = 150,
                         sprite = {x=2,y=1},
                         name = "shovel_iron",
                     })
@@ -624,15 +679,15 @@ return {
                         name = "hoe_iron",
                     })
             table.insert(gui.inventory, {
-                        price = 150,
-                        sprite = {x=4,y=1},
-                        name = "berry_bush_seed",
+                        price = 100,
+                        sprite = {x=2,y=2},
+                        name = "pathway",
                     })
             if game.players[game.player_ids[1]].inventory_slots == 1 then
                 --small backpack
                 table.insert(gui.inventory, {
                         price = 200,
-                        sprite = {x=2,y=2},
+                        sprite = {x=5,y=1},
                         func = function(slot,gui)
                             for _,id in pairs(game.player_ids) do
                                 game.players[id].inventory_slots = game.players[id].inventory_slots + 1
@@ -646,7 +701,7 @@ return {
                 --large backpack
                 table.insert(gui.inventory, {
                         price = 800,
-                        sprite = {x=3,y=2},
+                        sprite = {x=6,y=1},
                         func = function(slot,gui)
                             for _,id in pairs(game.player_ids) do
                                 game.players[id].inventory_slots = game.players[id].inventory_slots + 1
