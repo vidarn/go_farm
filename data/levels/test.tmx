@@ -134,7 +134,7 @@
   </tile>
   <tile id="10">
    <properties>
-    <property name="interactable_type" value="sunflower_seed"/>
+    <property name="interactable_type" value="maize_seed"/>
    </properties>
   </tile>
   <tile id="11">
@@ -184,7 +184,7 @@
  </layer>
  <layer name="objects" width="40" height="40">
   <data encoding="base64" compression="zlib">
-   eJzt1rsNwDAIBUCXmchJYcn7b5UVUiARPd9NAIjfGMDf7as7glozIJ9VmENCPcj3ZQ/derlE2s4HoMfTcE9O+2vdbMhjriHPC42/AuE=
+   eJzt2MEJgEAMBMA8rUh9CF7/VVmC9wicrDMVJEsgIVXA141tdQW99oB+rsYeEvIg3z0xp4dZbjGTNQC8ORfsk7/dtXY25En7vwBVD6bvAuM=
   </data>
  </layer>
 </map>
