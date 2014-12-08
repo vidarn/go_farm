@@ -190,8 +190,8 @@ game.harvest_types = {
         set_sprite = function(id)
             set_sprite(id,"objects.png",1,4,0.2,1,32,32,-16,-24)
         end,
-        max_amount = 10,
-        price = 10,
+        max_amount = 12,
+        price = 30,
     },
     berry_bush_harvest = {
         set_sprite = function(id)
@@ -205,21 +205,21 @@ game.harvest_types = {
             set_sprite(id,"objects.png",6,4,0.2,1,32,32,-16,-24)
         end,
         max_amount = 10,
-        price = 15,
+        price = 80,
     },
     maize_harvest = {
         set_sprite = function(id)
             set_sprite(id,"objects.png",3,4,0.2,1,32,32,-16,-24)
         end,
-        max_amount = 10,
-        price = 20,
+        max_amount = 15,
+        price = 6,
     },
     carrot_harvest = {
         set_sprite = function(id)
             set_sprite(id,"objects.png",4,4,0.2,1,32,32,-16,-24)
         end,
-        max_amount = 10,
-        price = 20,
+        max_amount = 12,
+        price = 10,
     },
 }
 
@@ -265,7 +265,7 @@ return {
     sunflower_seed = {
         create = function(id)
             game.item_properties[id] = {
-                amount = 4
+                amount = 6
             }
 
             set_sprite(id,"objects.png",1,3,0.2,1,32,32,-16,-24)
@@ -354,7 +354,7 @@ return {
     berry_bush_seed = {
         create = function(id)
             game.item_properties[id] = {
-                amount = 1
+                amount = 2
             }
 
             set_sprite(id,"objects.png",2,3,0.2,1,32,32,-16,-24)
@@ -433,7 +433,7 @@ return {
     carrot_seed = {
         create = function(id)
             game.item_properties[id] = {
-                amount = 5
+                amount = 12
             }
 
             set_sprite(id,"objects.png",4,3,0.2,1,32,32,-16,-24)
@@ -699,28 +699,28 @@ return {
             }
             table.insert(gui.inventory, {
                         price = 20,
-                        sprite = {x=1,y=1},
-                        name = "sunflower_seed",
-                    })
-            table.insert(gui.inventory, {
-                        price = 30,
-                        sprite = {x=5,y=2},
-                        name = "tulip_seed",
-                    })
-            table.insert(gui.inventory, {
-                        price = 60,
                         sprite = {x=1,y=2},
                         name = "maize_seed",
                     })
             table.insert(gui.inventory, {
-                        price = 100,
+                        price = 40,
                         sprite = {x=4,y=1},
                         name = "berry_bush_seed",
                     })
             table.insert(gui.inventory, {
-                        price = 70,
+                        price = 80,
                         sprite = {x=3,y=2},
                         name = "carrot_seed",
+                    })
+            table.insert(gui.inventory, {
+                        price = 90,
+                        sprite = {x=1,y=1},
+                        name = "sunflower_seed",
+                    })
+            table.insert(gui.inventory, {
+                        price = 200,
+                        sprite = {x=5,y=2},
+                        name = "tulip_seed",
                     })
             table.insert(gui.inventory, {
                         price = 150,

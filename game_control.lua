@@ -161,7 +161,7 @@ function update_plants(dt)
     -- at 2 it is decomposing
     for id,plant in pairs(game.plants) do
         if plant.species == 'sunflower' then
-            local growth_rate = 0.1 --percent per second
+            local growth_rate = 0.0167 -- 1 minute to grow
             if plant.growth > 0.3 and plant.state < 0.7 then
                 set_sprite(id,"plants.png",2,1,0.8,1,32,64,-16,-64+8)
                 plant.state = 1
@@ -177,7 +177,7 @@ function update_plants(dt)
             plant.growth = plant.growth + dt*growth_rate
         end
         if plant.species == 'maize' then
-            local growth_rate = 0.05 --percent per second
+            local growth_rate = 0.03 --percent per second
             if plant.growth > 0.3 and plant.state < 0.7 then
                 set_sprite(id,"plants.png",6,1,0.8,1,32,64,-16,-64+8)
                 plant.state = 1
@@ -193,7 +193,7 @@ function update_plants(dt)
             plant.growth = plant.growth + dt*growth_rate
         end
         if plant.species == 'tulip' then
-            local growth_rate = 0.05 --percent per second
+            local growth_rate = 0.018 --percent per second
             if plant.growth > 0.3 and plant.state < 0.7 then
                 set_sprite(id,"plants.png",10,3,0.8,1,32,32,-16,-32+8)
                 plant.state = 1
@@ -209,7 +209,7 @@ function update_plants(dt)
             plant.growth = plant.growth + dt*growth_rate
         end
         if plant.species == 'berry_bush' then
-            local growth_rate = 0.02 --percent per second
+            local growth_rate = 0.3 --percent per second
             if plant.growth > 0.3 and plant.state < 0.7 then
                 set_sprite(id,"plants.png",2,3,0.8,1,32,32,-16,-32+8)
                 plant.state = 1
@@ -217,6 +217,7 @@ function update_plants(dt)
             if plant.growth > 0.7 and plant.state <= 1.0 then
                 set_sprite(id,"plants.png",3,3,0.8,1,32,32,-16,-32+8)
                 plant.state = 2
+                growth_rate = 0.005 --Slow down!
             end
             if plant.growth > 1.0 and plant.state <= 2 then
                 set_sprite(id,"plants.png",4,3,0.8,1,32,32,-16,-32+8)
@@ -225,7 +226,7 @@ function update_plants(dt)
             plant.growth = plant.growth + dt*growth_rate
         end
         if plant.species == 'carrot' then
-            local growth_rate = 0.05 --percent per second
+            local growth_rate = 0.015 --percent per second
             if plant.growth > 0.3 and plant.state < 0.7 then
                 set_sprite(id,"plants.png",6,3,0.8,1,32,32,-16,-32+8)
                 plant.state = 1
