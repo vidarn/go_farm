@@ -166,12 +166,28 @@ function update_plants(dt)
                 set_sprite(id,"plants.png",2,1,0.8,1,32,64,-16,-64+8)
                 plant.state = 1
             end
-            if plant.growth > 0.7 and plant.state < 1.0 then
+            if plant.growth > 0.7 and plant.state <= 1.0 then
                 set_sprite(id,"plants.png",3,1,0.8,1,32,64,-16,-64+8)
                 plant.state = 2
             end
-            if plant.growth > 1.0 and plant.state < 2 then
+            if plant.growth > 1.0 and plant.state <= 2 then
                 set_sprite(id,"plants.png",4,1,0.8,1,32,64,-16,-64+8)
+                plant.state = 3
+            end
+            plant.growth = plant.growth + dt*growth_rate
+        end
+        if plant.species == 'maize' then
+            local growth_rate = 0.5 --percent per second
+            if plant.growth > 0.3 and plant.state < 0.7 then
+                set_sprite(id,"plants.png",6,1,0.8,1,32,64,-16,-64+8)
+                plant.state = 1
+            end
+            if plant.growth > 0.7 and plant.state <= 1.0 then
+                set_sprite(id,"plants.png",7,1,0.8,1,32,64,-16,-64+8)
+                plant.state = 2
+            end
+            if plant.growth > 1.0 and plant.state <= 2 then
+                set_sprite(id,"plants.png",8,1,0.8,1,32,64,-16,-64+8)
                 plant.state = 3
             end
             plant.growth = plant.growth + dt*growth_rate

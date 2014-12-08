@@ -43,7 +43,7 @@ function add_player(x,y)
 
     -- SET UP DEFAULT PLAYER!
     game.players[id] = {
-        inventory_slots = 2,
+        inventory_slots = 1,
         active_inventory_slot = 1,
         inventory = {},
         available_interactables = nil,

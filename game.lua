@@ -17,7 +17,7 @@ game.num_chunks = {w=0,h=0}
 game.chunks_to_draw = {}
 game.debug = false
 game.player_ids = {}
-game.money = 40
+game.money = 40000
 game.harvest_tip_shown = false
 game.message = ""
 
@@ -458,7 +458,7 @@ function game:draw()
                 local y = g_screenres.h-margin
 
                 if sprite ~= nil and item_id ~= nil and key ~= nil then
-                    sprite.anim:draw(sprite.sprite,x,y-8)
+                    sprite.anim:draw(sprite.sprite,x,y)
                 end
                 -- draw amount if it exists
                 if game.item_properties[item_id] ~= nil and game.item_properties[item_id].amount ~= nil then

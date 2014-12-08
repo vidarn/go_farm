@@ -84,12 +84,9 @@ function add_harvest_to_inventory(player_id, harvest_type_string)
 
     -- If there is space, create a new one
     if slot_found == false then
-        print("No MATCHING HARVEST SLOT FOUND")
         --find empty slot
         inventory_id = get_free_slot(player_id)
-        print(inventory_id)
         if inventory_id then
-            print("Empty slot FOUND")
             --create harvest item
             item_id = new_entity()
             game.item_properties[item_id] = {
@@ -106,7 +103,6 @@ function add_harvest_to_inventory(player_id, harvest_type_string)
     end
 
     if slot_found == true then
-        print("SLOT found adding to inventory and removing entity!")
         --add to inventory
         game.players[player_id].inventory[inventory_id] = item_id
         --delete world entity
@@ -121,8 +117,56 @@ function add_harvest_to_inventory(player_id, harvest_type_string)
         return true
     else
         play_sound("fail")
-        print("NO SLOT FOUND FOR HARVEST!")
         return false
+    end
+end
+
+function plant_check_interact(id)
+    local plant = game.plants[id]
+    if plant.growth > 1 then
+        return true
+    end
+end
+
+function plant_interact(id,player_id,harvest_name)
+    -- check if self is ready to be harvested.
+    local player = game.players[player_id]
+    local plant = game.plants[id]
+    if plant.growth > 1 then
+        if add_harvest_to_inventory(player_id,harvest_name) then
+            local x = game.pos[id].x
+            local y = game.pos[id].y
+            local layer = game.map.layers['ground']
+            -- set tile to be hole
+            set_tile(x, y, layer, 64)
+            kill_entity(id)
+        end
+    end
+end
+
+function seed_use(player_id,name)
+    local layer = game.map.layers['ground']
+    local tile, tileset = get_tile_and_tileset(game.pos[player_id].x, game.pos[player_id].y, layer)
+    local planted = false
+    if tile ~= nil then
+        local props = tileset.properties[tile]
+        if props ~= nil then
+            for key,val in pairs(props) do
+                local px = game.pos[player_id].x
+                local py = game.pos[player_id].y
+                if key == 'plantable' and val == 'true' then
+                    set_tile(px, py, layer, 63)
+                    add_interactable(math.floor(px),math.floor(py),name)
+                    planted = true
+                end
+            end
+        end
+    end
+    if planted then
+        consume_inventory_item(player_id)
+        play_sound("plant")
+    else
+        play_sound("fail")
     end
 end
 
@@ -155,6 +199,13 @@ game.harvest_types = {
         end,
         max_amount = 10,
         price = 10,
+    },
+    maize_harvest = {
+        set_sprite = function(id)
+            set_sprite(id,"objects.png",3,4,0.2,1,32,32,-16,-24)
+        end,
+        max_amount = 10,
+        price = 20,
     },
 }
 
@@ -190,26 +241,11 @@ return {
         end,
 
         check_interact = function(id,player_id)
-            local plant = game.plants[id]
-            if plant.growth > 1 then
-                return true
-            end
+            return plant_check_interact(id)
         end,
 
         interact = function(id,player_id)
-            -- check if self is ready to be harvested.
-            local player = game.players[player_id]
-            local plant = game.plants[id]
-            if plant.growth > 1 then
-                if add_harvest_to_inventory(player_id,"sunflower_harvest") then
-                    local x = game.pos[id].x
-                    local y = game.pos[id].y
-                    local layer = game.map.layers['ground']
-                    -- set tile to be hole
-                    set_tile(x, y, layer, 64)
-                    kill_entity(id)
-                end
-            end
+            plant_interact(id,player_id,'sunflower_harvest')
         end,
     },
     sunflower_seed = {
@@ -233,33 +269,7 @@ return {
             drop_item(player_id)
         end,
         use = function(player_id)
-            print("USE SUNFLOWERSEED!")
-
-            local layer = game.map.layers['ground']
-            local tile, tileset = get_tile_and_tileset(game.pos[player_id].x, game.pos[player_id].y, layer)
-            print(tile)
-            local planted = false
-            if tile ~= nil then
-                local props = tileset.properties[tile]
-                if props ~= nil then
-                    for key,val in pairs(props) do
-                        local px = game.pos[player_id].x
-                        local py = game.pos[player_id].y
-                        if key == 'plantable' and val == 'true' then
-                            set_tile(px, py, layer, 63)
-                            add_interactable(math.floor(px),math.floor(py),'sunflower')
-                            planted = true
-                        end
-                    end
-                end
-            end
-
-            if planted then
-                consume_inventory_item(player_id)
-                play_sound("plant")
-            else
-                play_sound("fail")
-            end
+            seed_use(player_id,'sunflower')
         end,
     },
 
@@ -270,10 +280,7 @@ return {
         end,
 
         check_interact = function(id,player_id)
-            local plant = game.plants[id]
-            if plant.growth > 1 then
-                return true
-            end
+            return plant_check_interact(id)
         end,
 
         interact = function(id,player_id)
@@ -282,8 +289,6 @@ return {
             local plant = game.plants[id]
             if plant.growth > 1 then
                 if add_harvest_to_inventory(player_id,"berry_bush_harvest") then
-                    local x = game.pos[id].x
-                    local y = game.pos[id].y
                     --reset growth back to pre berry..
                     print("resetting bush")
                     plant.growth = 0.7
@@ -315,33 +320,46 @@ return {
             drop_item(player_id)
         end,
         use = function(player_id)
-            print("USE BERRYBUSH SEED!")
+            seed_use(player_id,'berry_bush')
+        end,
+    },
 
-            local layer = game.map.layers['ground']
-            local tile, tileset = get_tile_and_tileset(game.pos[player_id].x, game.pos[player_id].y, layer)
-            print(tile)
-            local planted = false
-            if tile ~= nil then
-                local props = tileset.properties[tile]
-                if props ~= nil then
-                    for key,val in pairs(props) do
-                        local px = game.pos[player_id].x
-                        local py = game.pos[player_id].y
-                        if key == 'plantable' and val == 'true' then
-                            set_tile(px, py, layer, 63)
-                            add_interactable(math.floor(px),math.floor(py),'berry_bush')
-                            planted = true
-                        end
-                    end
-                end
-            end
+    maize = {
+        create = function(id)
+            set_sprite(id,"plants.png",5,1,0.8,1,32,64,-16,-64+8)
+            game.plants[id] = {species="maize", growth=0.0, state=0}
+        end,
 
-            if planted then
-                consume_inventory_item(player_id)
-                play_sound("plant")
-            else
-                play_sound("fail")
-            end
+        check_interact = function(id,player_id)
+            return plant_check_interact(id)
+        end,
+
+        interact = function(id,player_id)
+            plant_interact(id,player_id,'maize_harvest')
+        end,
+    },
+    maize_seed = {
+        create = function(id)
+            game.item_properties[id] = {
+                amount = 5
+            }
+
+            set_sprite(id,"objects.png",3,3,0.2,1,32,32,-16,-24)
+        end,
+
+        check_interact = function(id,player_id)
+            return true
+        end,
+
+        interact = function(id,player_id)
+            return pickup_item(id,player_id)
+        end,
+
+        drop = function(player_id)
+            drop_item(player_id)
+        end,
+        use = function(player_id)
+            seed_use(player_id,'maize')
         end,
     },
 
@@ -528,8 +546,13 @@ return {
                         local gui = game.players[player_id].gui
                         local active_item = gui.inventory[gui.active_slot]
                         if game.money >= active_item.price then
-                            add_interactable(game.pos[id].x+1.5,game.pos[id].y,gui.inventory[gui.active_slot].name)
                             game.money = game.money - active_item.price
+                            if active_item.name ~= nil then
+                                add_interactable(game.pos[id].x+1.5,game.pos[id].y,gui.inventory[gui.active_slot].name)
+                            end
+                            if active_item.func ~= nil then
+                                active_item.func(active_slot,gui)
+                            end
                             play_sound("buy")
                         else
                             play_sound("fail")
@@ -581,12 +604,17 @@ return {
                 },
             }
             table.insert(gui.inventory, {
-                        price = 30,
+                        price = 20,
                         sprite = {x=1,y=1},
                         name = "sunflower_seed",
                     })
             table.insert(gui.inventory, {
-                        price = 300,
+                        price = 60,
+                        sprite = {x=1,y=2},
+                        name = "maize_seed",
+                    })
+            table.insert(gui.inventory, {
+                        price = 150,
                         sprite = {x=2,y=1},
                         name = "shovel_iron",
                     })
@@ -596,10 +624,38 @@ return {
                         name = "hoe_iron",
                     })
             table.insert(gui.inventory, {
-                        price = 200,
+                        price = 150,
                         sprite = {x=4,y=1},
                         name = "berry_bush_seed",
                     })
+            if game.players[game.player_ids[1]].inventory_slots == 1 then
+                --small backpack
+                table.insert(gui.inventory, {
+                        price = 200,
+                        sprite = {x=1,y=1},
+                        func = function(slot,gui)
+                            for _,id in pairs(game.player_ids) do
+                                game.players[id].inventory_slots = game.players[id].inventory_slots + 1
+                                table.remove(gui.inventory,slot)
+                                gui.active_slot = gui.active_slot - 1
+                            end
+                        end
+                    })
+            end
+            if game.players[game.player_ids[1]].inventory_slots == 2 then
+                --large backpack
+                table.insert(gui.inventory, {
+                        price = 800,
+                        sprite = {x=1,y=1},
+                        func = function(slot,gui)
+                            for _,id in pairs(game.player_ids) do
+                                game.players[id].inventory_slots = game.players[id].inventory_slots + 1
+                                table.remove(gui.inventory,slot)
+                                gui.active_slot = gui.active_slot - 1
+                            end
+                        end
+                    })
+            end
             timer.tween(0.4,gui,{alpha = 1.0},'in-out-expo')
             game.players[player_id].gui = gui
         end
