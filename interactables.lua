@@ -681,6 +681,11 @@ return {
                         name = "hoe_iron",
                     })
             table.insert(gui.inventory, {
+                        price = 50,
+                        sprite = {x=4,y=2},
+                        name = "grass",
+                    })
+            table.insert(gui.inventory, {
                         price = 100,
                         sprite = {x=2,y=2},
                         name = "pathway",
@@ -793,5 +798,50 @@ return {
         drop = function(player_id)
             drop_item(player_id)
         end,
-    }
+    },
+
+    grass = {
+        create = function(id)
+            game.item_properties[id] = {
+                amount = 15
+            }
+
+            set_sprite(id,"objects.png",5,3,0.2,1,32,32,-16,-24)
+        end,
+
+        check_interact = function(id,player_id)
+            return true
+        end,
+
+        interact = function(id,player_id)
+            return pickup_item(id,player_id)
+        end,
+
+        drop = function(player_id)
+            drop_item(player_id)
+        end,
+        use = function(player_id)
+            local layer = game.map.layers['ground']
+            local tile, tileset = get_tile_and_tileset(game.pos[player_id].x, game.pos[player_id].y, layer)
+            if tile ~= nil then
+                local props = tileset.properties[tile]
+                if props ~= nil then
+                    for key,val in pairs(props) do
+                        print("cheking tiles.. key:",key," value:",val)
+                        local px = game.pos[player_id].x
+                        local py = game.pos[player_id].y
+                        if key == 'plantable' and val == 'true' then
+                            if math.random() < 0.5 then
+                                set_tile(px, py, layer, 60)
+                            else 
+                                set_tile(px, py, layer, 61)
+                            end
+                            consume_inventory_item(player_id)
+                            play_sound("dig")
+                        end
+                    end
+                end
+            end
+        end,
+    },
 }
