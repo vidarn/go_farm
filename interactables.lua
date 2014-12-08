@@ -290,7 +290,7 @@ return {
     berry_bush_seed = {
         create = function(id)
             game.item_properties[id] = {
-                amount = 4
+                amount = 1
             }
 
             set_sprite(id,"objects.png",2,3,0.2,1,32,32,-16,-24)
@@ -581,14 +581,19 @@ return {
                         name = "sunflower_seed",
                     })
             table.insert(gui.inventory, {
-                        price = 200,
+                        price = 300,
                         sprite = {x=2,y=1},
                         name = "shovel_iron",
                     })
             table.insert(gui.inventory, {
-                        price = 300,
+                        price = 100,
                         sprite = {x=3,y=1},
                         name = "hoe_iron",
+                    })
+            table.insert(gui.inventory, {
+                        price = 200,
+                        sprite = {x=4,y=1},
+                        name = "berry_bush_seed",
                     })
             timer.tween(0.4,gui,{alpha = 1.0},'in-out-expo')
             game.players[player_id].gui = gui
