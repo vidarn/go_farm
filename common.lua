@@ -71,6 +71,8 @@ function play_sound(name)
     print(name..".wav")
     local sound = load_resource(name..".wav","sfx"),
     print(sound)
+    -- randomize pitch
+    sound:setPitch(1 - 0.5*(math.random()-0.5)) 
     love.audio.play(sound)
 end
 
