@@ -200,6 +200,13 @@ game.harvest_types = {
         max_amount = 10,
         price = 10,
     },
+    tulip_harvest = {
+        set_sprite = function(id)
+            set_sprite(id,"objects.png",6,4,0.2,1,32,32,-16,-24)
+        end,
+        max_amount = 10,
+        price = 15,
+    },
     maize_harvest = {
         set_sprite = function(id)
             set_sprite(id,"objects.png",3,4,0.2,1,32,32,-16,-24)
@@ -279,6 +286,46 @@ return {
             seed_use(player_id,'sunflower')
         end,
     },
+
+    tulip = {
+        create = function(id)
+            set_sprite(id,"plants.png",9,3,0.8,1,32,32,-16,-32+8)
+            game.plants[id] = {species="tulip", growth=0.15*math.random(), state=0}
+        end,
+
+        check_interact = function(id,player_id)
+            return plant_check_interact(id)
+        end,
+
+        interact = function(id,player_id)
+            plant_interact(id,player_id,'tulip_harvest')
+        end,
+    },
+    tulip_seed = {
+        create = function(id)
+            game.item_properties[id] = {
+                amount = 4
+            }
+
+            set_sprite(id,"objects.png",6,3,0.2,1,32,32,-16,-24)
+        end,
+
+        check_interact = function(id,player_id)
+            return true
+        end,
+
+        interact = function(id,player_id)
+            return pickup_item(id,player_id)
+        end,
+
+        drop = function(player_id)
+            drop_item(player_id)
+        end,
+        use = function(player_id)
+            seed_use(player_id,'tulip')
+        end,
+    },
+
 
     berry_bush = {
         create = function(id)
@@ -654,6 +701,11 @@ return {
                         price = 20,
                         sprite = {x=1,y=1},
                         name = "sunflower_seed",
+                    })
+            table.insert(gui.inventory, {
+                        price = 30,
+                        sprite = {x=5,y=2},
+                        name = "tulip_seed",
                     })
             table.insert(gui.inventory, {
                         price = 60,
