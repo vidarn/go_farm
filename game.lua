@@ -100,7 +100,7 @@ function game:init()
     add_player(14,15)
     add_camera(game.player_ids[1])
 
-    timer.tween(2,game,{go_farm_alpha =0},'out-expo')
+    timer.tween(2,game,{go_farm_alpha =0},'in-expo')
 
     if g_num_players == 2 then
         add_player(10,26)
