@@ -57,6 +57,7 @@
   <tile id="181">
    <properties>
     <property name="collision" value="true"/>
+    <property name="pathable" value="true"/>
    </properties>
   </tile>
  </tileset>
@@ -159,7 +160,7 @@
  </layer>
  <layer name="objects" width="40" height="40">
   <data encoding="base64" compression="zlib">
-   eJzt1sEJACAMBDCfTqQ+BPffSpzBoijJBO1R6KUEcFbJtyfY1wN3+CEPWKpbDjHkCECAduGf6LXA63Rx+M8E1iwCDA==
+   eJzt1rsNwDAIBUCXmchJYcn7b5UVUiARPd9NAIjfGMDf7as7glozIJ9VmENCPcj3ZQ/derlE2s4HoMfTcE9O+2vdbMhjriHPC42/AuE=
   </data>
  </layer>
 </map>

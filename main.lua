@@ -60,13 +60,14 @@ g_keys = {
 g_font = love.graphics.newImageFont(load_resource('8pxfont.png','font'),[[!"#$%&`()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_'abcdefghijlkmnopqrstuvwxyz{|}~ ]])
 
 function love.load()
+    love.window.setTitle("Go farm!")
     love.audio.play(g_music.ambience)
     love.audio.play(g_music.chime)
     love.graphics.setFont(g_font)
     gamestate.registerEvents()
     -- TODO(Vidar) change to menu for release
-    gamestate.switch(game)
-    --gamestate.switch(menu)
+    --gamestate.switch(game)
+    gamestate.switch(menu)
 end
 
 

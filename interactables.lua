@@ -244,7 +244,7 @@ return {
     sunflower = {
         create = function(id)
             set_sprite(id,"plants.png",1,1,0.8,1,32,64,-16,-64+8)
-            game.plants[id] = {species="sunflower", growth=0.0, state=0}
+            game.plants[id] = {species="sunflower", growth=0.15*math.random(), state=0}
         end,
 
         check_interact = function(id,player_id)
@@ -371,7 +371,7 @@ return {
     },
     carrot = {
         create = function(id)
-            set_sprite(id,"plants.png",5,2,0.8,1,32,64,-16,-64+8)
+            set_sprite(id,"plants.png",5,2,0.8,1,32,64,-16,-32+8)
             game.plants[id] = {species="carrot", growth=0.0, state=0}
         end,
 
@@ -593,7 +593,9 @@ return {
                         if game.money >= active_item.price then
                             game.money = game.money - active_item.price
                             if active_item.name ~= nil then
-                                add_interactable(game.pos[id].x+1.5,game.pos[id].y,gui.inventory[gui.active_slot].name)
+                                local offset_x = 0.5 - math.random()
+                                local offset_y = 0.5 - math.random()
+                                add_interactable(game.pos[id].x+1.5 + offset_x,game.pos[id].y + offset_y,gui.inventory[gui.active_slot].name)
                             end
                             if active_item.func ~= nil then
                                 active_item.func(active_slot,gui)
@@ -659,12 +661,12 @@ return {
                         name = "maize_seed",
                     })
             table.insert(gui.inventory, {
-                        price = 150,
+                        price = 100,
                         sprite = {x=4,y=1},
                         name = "berry_bush_seed",
                     })
             table.insert(gui.inventory, {
-                        price = 150,
+                        price = 70,
                         sprite = {x=3,y=2},
                         name = "carrot_seed",
                     })
@@ -759,7 +761,7 @@ return {
             game.item_properties[id] = {
                 amount = 15
             }
-            set_sprite(id,"objects.png",1,5,0.2,1,32,32,-16,-24)
+            set_sprite(id,"objects.png",1,5,0.2,1,32,32,-16,-24+6)
             print("Pathway CREATE")
         end,
 
