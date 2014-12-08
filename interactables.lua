@@ -258,7 +258,7 @@ return {
     sunflower_seed = {
         create = function(id)
             game.item_properties[id] = {
-                amount = 4
+                amount = 6
             }
 
             set_sprite(id,"objects.png",1,3,0.2,1,32,32,-16,-24)
@@ -307,7 +307,7 @@ return {
     berry_bush_seed = {
         create = function(id)
             game.item_properties[id] = {
-                amount = 1
+                amount = 2
             }
 
             set_sprite(id,"objects.png",2,3,0.2,1,32,32,-16,-24)
@@ -386,7 +386,7 @@ return {
     carrot_seed = {
         create = function(id)
             game.item_properties[id] = {
-                amount = 5
+                amount = 12
             }
 
             set_sprite(id,"objects.png",4,3,0.2,1,32,32,-16,-24)
@@ -652,23 +652,23 @@ return {
             }
             table.insert(gui.inventory, {
                         price = 20,
-                        sprite = {x=1,y=1},
-                        name = "sunflower_seed",
-                    })
-            table.insert(gui.inventory, {
-                        price = 60,
                         sprite = {x=1,y=2},
                         name = "maize_seed",
                     })
             table.insert(gui.inventory, {
-                        price = 100,
+                        price = 40,
                         sprite = {x=4,y=1},
                         name = "berry_bush_seed",
                     })
             table.insert(gui.inventory, {
-                        price = 70,
+                        price = 80,
                         sprite = {x=3,y=2},
                         name = "carrot_seed",
+                    })
+            table.insert(gui.inventory, {
+                        price = 90,
+                        sprite = {x=1,y=1},
+                        name = "sunflower_seed",
                     })
             table.insert(gui.inventory, {
                         price = 150,
