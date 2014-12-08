@@ -192,6 +192,22 @@ function update_plants(dt)
             end
             plant.growth = plant.growth + dt*growth_rate
         end
+        if plant.species == 'tulip' then
+            local growth_rate = 0.018 --percent per second
+            if plant.growth > 0.3 and plant.state < 0.7 then
+                set_sprite(id,"plants.png",10,3,0.8,1,32,32,-16,-32+8)
+                plant.state = 1
+            end
+            if plant.growth > 0.7 and plant.state <= 1.0 then
+                set_sprite(id,"plants.png",11,3,0.8,1,32,32,-16,-32+8)
+                plant.state = 2
+            end
+            if plant.growth > 1.0 and plant.state <= 2 then
+                set_sprite(id,"plants.png",12,3,0.8,1,32,32,-16,-32+8)
+                plant.state = 3
+            end
+            plant.growth = plant.growth + dt*growth_rate
+        end
         if plant.species == 'berry_bush' then
             local growth_rate = 0.3 --percent per second
             if plant.growth > 0.3 and plant.state < 0.7 then
