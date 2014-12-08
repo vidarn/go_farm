@@ -102,8 +102,6 @@ function add_harvest_to_inventory(player_id, harvest_type_string)
             game.sprites[item_id].active = false
 
             slot_found = true
-        else
-            play_sound("fail")
         end
     end
 
@@ -113,6 +111,13 @@ function add_harvest_to_inventory(player_id, harvest_type_string)
         game.players[player_id].inventory[inventory_id] = item_id
         --delete world entity
         play_sound("harvest")
+        
+        -- show harvest tip
+        if not game.harvest_tip_shown then
+            game.message = "GAME HELP: BRING HARVEST TO COIN MACHINE"
+            game.harvest_tip_shown = true
+        end
+
         return true
     else
         play_sound("fail")
@@ -621,6 +626,7 @@ return {
                     player.inventory[player.active_inventory_slot] = nil
                     kill_entity(inv)
                     success = true
+                    game.message = ""
                 end
             end
             if success == true then

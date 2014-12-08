@@ -17,8 +17,9 @@ game.num_chunks = {w=0,h=0}
 game.chunks_to_draw = {}
 game.debug = false
 game.player_ids = {}
-game.money = 400
-
+game.money = 40
+game.harvest_tip_shown = false
+game.message = ""
 
 game.tile_size = {
     w=32,h=16,
@@ -484,7 +485,8 @@ function game:draw()
 
     love.graphics.setColor(255,255,255)
     love.graphics.print("$"..game.money,10,10)
-
+    local t_w = 300
+    love.graphics.printf(game.message,(g_screenres.w-t_w)*0.5,g_screenres.h-20,t_w,'center')
 
 
     -- Draw scaled canvas to screen

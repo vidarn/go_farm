@@ -56,6 +56,7 @@ function menu:draw()
 end
 
 function menu:keyreleased(key, code)
+    play_sound('blip')
     if menu.ask_switch_player == true then
         if key == g_keys[menu.active_player].up then
             menu.active_player = 2
